@@ -18,12 +18,13 @@ const MessageList = () => {
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     select: (data) => ({
-      pages: [...data.pages]
-        .map((p) => ({
-          ...p,
-          items: [...p.items].reverse(),
-        }))
-        .reverse(),
+      pages: [...data.pages].reverse(),
+      //  pages: [...data.pages]
+      //   .map((p) => ({
+      //     ...p,
+      //     items: [...p.items].reverse(),
+      //   }))
+      //   .reverse(),
       pageParams: [...data.pageParams].reverse(),
     }),
   });
