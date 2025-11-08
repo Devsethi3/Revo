@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Channel {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign key (kinde ides)
+  workspaceId String
+  createdById String
+
+  message Message[]
+
+  @@unique([workspaceId, name])
+}
+
+model Message {
+  id       String @id @default(uuid())
+  content  String
+  imageUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId     String
+  authorEmail  String
+  authorName   String
+  authorAvatar String
+  channel      Channel? @relation(fields: [channelId], references: [id])
+  channelId    String?
+}
