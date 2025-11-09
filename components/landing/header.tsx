@@ -10,6 +10,7 @@ import {
   RegisterLink,
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 const menuItems = [
   { name: "Features", href: "#link" },
@@ -94,6 +95,8 @@ export const HeroHeader = () => {
                   ))}
                 </ul>
               </div>
+
+              <ThemeToggle />
 
               {isLoading ? null : (
                 <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">

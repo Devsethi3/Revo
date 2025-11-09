@@ -71,7 +71,7 @@ export default function HeroSection() {
               className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32"
             >
               <Image
-                src=""
+                src="/not-found.png"
                 alt="background"
                 className="hidden size-full dark:block"
                 width="3276"
