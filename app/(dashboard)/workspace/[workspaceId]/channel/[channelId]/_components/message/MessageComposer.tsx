@@ -37,7 +37,7 @@ const MessageComposer = ({
         }
         footerLeft={
           upload.stagedUrl ? (
-            <AttachmentChip url={upload.stagedUrl} />
+            <AttachmentChip url={upload.stagedUrl} onRemove={upload.clear} />
           ) : (
             <Button
               onClick={() => upload.setIsOpen(true)}

@@ -4,9 +4,10 @@ import Image from "next/image";
 
 interface AttachmentChipProps {
   url: string;
+  onRemove: () => void;
 }
 
-const AttachmentChip = ({ url }: AttachmentChipProps) => {
+const AttachmentChip = ({ url, onRemove }: AttachmentChipProps) => {
   return (
     <>
       <div className="group relative overflow-hidden rounded-md bg-muted size-12">
@@ -16,6 +17,7 @@ const AttachmentChip = ({ url }: AttachmentChipProps) => {
             type="button"
             variant="destructive"
             className="size-6 p-0 rounded-full"
+            onClick={onRemove}
           >
             <X className="size-3" />
           </Button>
