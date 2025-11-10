@@ -25,7 +25,8 @@ const ImageUploadModal = ({
         <DialogHeader>
           <DialogTitle>Upload Image</DialogTitle>
           <DialogDescription>
-            Upload your image and choose it for your workspace channel
+            Upload an image to use as your workspace channel icon or avatar.
+            Supported formats: JPG, PNG, GIF (max 4MB)
           </DialogDescription>
         </DialogHeader>
         <UploadDropzone
