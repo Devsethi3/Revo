@@ -53,7 +53,10 @@ const MessageInputForm = ({ channelId }: MessageInputProps) => {
   );
 
   function onSubmit(data: CreateMessageSchemaType) {
-    createMessageMutation.mutate(data);
+    createMessageMutation.mutate({
+      ...data,
+      imageUrl: upload.stagedUrl ?? undefined,
+    });
   }
 
   return (
