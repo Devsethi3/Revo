@@ -40,6 +40,17 @@ const MessageItem = ({ message }: MessageItemProps) => {
             className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
             content={JSON.parse(message.content)}
           />
+
+          {message.imageUrl && (
+            <div>
+              <Image
+                src={message.imageUrl}
+                alt="Message Attachment"
+                width={512}
+                height={512}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
