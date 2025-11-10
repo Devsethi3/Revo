@@ -3,6 +3,10 @@
 
 @plugin "@tailwindcss/typography";
 
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

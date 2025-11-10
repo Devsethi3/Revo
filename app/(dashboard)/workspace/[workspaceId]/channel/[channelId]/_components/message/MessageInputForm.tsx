@@ -17,6 +17,8 @@ import MessageComposer from "./MessageComposer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
 
 interface MessageInputProps {
   channelId: string;
@@ -24,6 +26,9 @@ interface MessageInputProps {
 
 const MessageInputForm = ({ channelId }: MessageInputProps) => {
   const queryClient = useQueryClient();
+  const [editorKey, setEditorKey] = useState(0);
+  const upload = useAttachmentUpload();
+
   const form = useForm({
     resolver: zodResolver(createMessageSchema),
     defaultValues: {
@@ -37,6 +42,8 @@ const MessageInputForm = ({ channelId }: MessageInputProps) => {
         queryClient.invalidateQueries({
           queryKey: orpc.message.list.key(),
         });
+        form.reset({ channelId, content: "" });
+        setEditorKey((k) => k + 1);
         return toast.success("Message Created Successfully");
       },
       onError: (error) => {
@@ -60,10 +67,12 @@ const MessageInputForm = ({ channelId }: MessageInputProps) => {
               <FormItem>
                 <FormControl>
                   <MessageComposer
+                    key={editorKey}
                     value={field.value}
                     onChange={field.onChange}
                     onSubmit={() => onSubmit(form.getValues())}
                     isSubmitting={createMessageMutation.isPending}
+                    upload={upload}
                   />
                 </FormControl>
                 <FormMessage />
