@@ -13,6 +13,7 @@ import {
   Organizations,
 } from "@kinde/management-api-js";
 import { KindeOrganization } from "@kinde-oss/kinde-auth-nextjs";
+import { readSecurityMiddleware } from "../middleware/arcjet/read";
 
 export const createChannel = base
   .use(requiredAuthMiddleware)
@@ -84,3 +85,20 @@ export const listChannels = base
       currentWorkspace: context.workspace,
     };
   });
+
+export const getChannel = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
+  .use(standardSecurityMiddleware)
+  .use(readSecurityMiddleware)
+  .route({
+    method: "GET",
+    path: "/channels/:channelId",
+    summary: "Get a channel by ID",
+    tags: ["channels"],
+  })
+  .input(z.object({channelId: z.string()}))
+  .output(z.void())
+  .handler(async ({context,input,errors}) => {
+
+  })
