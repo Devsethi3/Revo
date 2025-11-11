@@ -14,20 +14,30 @@ import {
   CreateMessageSchemaType,
 } from "@/app/schemas/message";
 import MessageComposer from "./MessageComposer";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
+import { Message } from "@/lib/generated/prisma";
 
 interface MessageInputProps {
   channelId: string;
 }
 
+type MessagePage = { items: Message[]; nextCursor?: string };
+type InfiniteMessages = InfiniteData<MessagePage>;
+
 const MessageInputForm = ({ channelId }: MessageInputProps) => {
   const queryClient = useQueryClient();
   const [editorKey, setEditorKey] = useState(0);
   const upload = useAttachmentUpload();
+
+  
 
   const form = useForm({
     resolver: zodResolver(createMessageSchema),
@@ -38,12 +48,35 @@ const MessageInputForm = ({ channelId }: MessageInputProps) => {
   });
   const createMessageMutation = useMutation(
     orpc.message.create.mutationOptions({
+      onMutate: async (data) => {
+        await queryClient.cancelQueries({
+          queryKey: ["message.list", channelId],
+        });
+        const previousData = queryClient.getQueryData<InfiniteMessages>([
+          "message.list",
+          channelId,
+        ]);
+
+        const tempId  = `optimistic-${crypto.randomUUID()}`
+
+        const optimisticMessage:Message = {
+          id: tempId,
+          content: data.content,
+          imageUrl: data.imageUrl ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          authorId:""
+        }
+      },
+
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: orpc.message.list.key(),
         });
         form.reset({ channelId, content: "" });
+        upload.clear();
         setEditorKey((k) => k + 1);
+
         return toast.success("Message Created Successfully");
       },
       onError: (error) => {

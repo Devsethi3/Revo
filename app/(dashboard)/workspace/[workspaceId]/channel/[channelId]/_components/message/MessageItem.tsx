@@ -42,12 +42,13 @@ const MessageItem = ({ message }: MessageItemProps) => {
           />
 
           {message.imageUrl && (
-            <div>
+            <div className="mt-3">
               <Image
                 src={message.imageUrl}
                 alt="Message Attachment"
                 width={512}
                 height={512}
+                className="rounded-md max-h-80 w-auto object-contain"
               />
             </div>
           )}
