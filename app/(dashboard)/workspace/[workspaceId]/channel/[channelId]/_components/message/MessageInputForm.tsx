@@ -25,6 +25,7 @@ import { useState } from "react";
 import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
 import { Message } from "@/lib/generated/prisma";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
+import { getAvatar } from "@/lib/get-avatar";
 
 interface MessageInputProps {
   channelId: string;
@@ -65,7 +66,11 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
           imageUrl: data.imageUrl ?? null,
           createdAt: new Date(),
           updatedAt: new Date(),
-          authorId: "",
+          authorId: user.id,
+          authorEmail: user.email!,
+          authorName: user.given_name ?? "John Doe",
+          authorAvatar: getAvatar(user.picture, user.email!),
+          channelId: channelId,
         };
       },
 
