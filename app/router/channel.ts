@@ -97,8 +97,25 @@ export const getChannel = base
     summary: "Get a channel by ID",
     tags: ["channels"],
   })
-  .input(z.object({channelId: z.string()}))
+  .input(z.object({ channelId: z.string() }))
   .output(z.void())
-  .handler(async ({context,input,errors}) => {
+  .handler(async ({ context, input, errors }) => {
+    const channel = await prisma.channel.findUnique({
+      where: {
+        id: input.channelId,
+        workspaceId: context.workspace.orgCode,
+      },
+      select: {
+        name: true,
+      },
+    });
 
-  })
+    if (!channel) {
+      throw errors.NOT_FOUND();
+    }
+
+    return {
+      channelName: channel.name,
+      currentUser: context.user,
+    };
+  });
