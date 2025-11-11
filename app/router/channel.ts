@@ -12,7 +12,7 @@ import {
   organization_user,
   Organizations,
 } from "@kinde/management-api-js";
-import { KindeOrganization } from "@kinde-oss/kinde-auth-nextjs";
+import { KindeOrganization, KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { readSecurityMiddleware } from "../middleware/arcjet/read";
 
 export const createChannel = base
@@ -98,7 +98,12 @@ export const getChannel = base
     tags: ["channels"],
   })
   .input(z.object({ channelId: z.string() }))
-  .output(z.void())
+  .output(
+    z.object({
+      channelName: z.string(),
+      currentUser: z.custom<KindeUser<Record<string, unknown>>>(),
+    })
+  )
   .handler(async ({ context, input, errors }) => {
     const channel = await prisma.channel.findUnique({
       where: {
