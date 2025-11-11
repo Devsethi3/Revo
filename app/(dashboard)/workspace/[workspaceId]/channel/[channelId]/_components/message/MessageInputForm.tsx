@@ -24,20 +24,20 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
 import { Message } from "@/lib/generated/prisma";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 
 interface MessageInputProps {
   channelId: string;
+  user: KindeUser<Record<string, unknown>>;
 }
 
 type MessagePage = { items: Message[]; nextCursor?: string };
 type InfiniteMessages = InfiniteData<MessagePage>;
 
-const MessageInputForm = ({ channelId }: MessageInputProps) => {
+const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
   const queryClient = useQueryClient();
   const [editorKey, setEditorKey] = useState(0);
   const upload = useAttachmentUpload();
-
-  
 
   const form = useForm({
     resolver: zodResolver(createMessageSchema),
@@ -57,16 +57,16 @@ const MessageInputForm = ({ channelId }: MessageInputProps) => {
           channelId,
         ]);
 
-        const tempId  = `optimistic-${crypto.randomUUID()}`
+        const tempId = `optimistic-${crypto.randomUUID()}`;
 
-        const optimisticMessage:Message = {
+        const optimisticMessage: Message = {
           id: tempId,
           content: data.content,
           imageUrl: data.imageUrl ?? null,
           createdAt: new Date(),
           updatedAt: new Date(),
-          authorId:""
-        }
+          authorId: "",
+        };
       },
 
       onSuccess: () => {
