@@ -1,9 +1,13 @@
+import z from "zod";
 import { heavyWriteSecurityMiddleware } from "../middleware/arcjet/heavy-write";
 import { standardSecurityMiddleware } from "../middleware/arcjet/standard";
 import { requiredAuthMiddleware } from "../middleware/auth";
 import { base } from "../middleware/base";
 import { requiredWorkspaceMiddleware } from "../middleware/workspace";
 import { inviteMemberSchema } from "../schemas/member";
+import { init } from "next/dist/compiled/webpack/webpack";
+import { Users } from "@kinde/management-api-js";
+import { getAvatar } from "@/lib/get-avatar";
 
 export const inviteMember = base
   .use(requiredAuthMiddleware)
@@ -17,4 +21,29 @@ export const inviteMember = base
     tags: ["Members"],
   })
   .input(inviteMemberSchema)
-  .output(z.void());
+  .output(z.void())
+  .handler(async ({ input, context, errors }) => {
+    try {
+      init();
+
+      await Users.createUser({
+        requestBody: {
+          organization_code: context.workspace.orgCode,
+          profile: {
+            given_name: input.name,
+            picture: getAvatar(null, input.email),
+          },
+          identities: [
+            {
+              type: "email",
+              details: {
+                email: input.email,
+              },
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      throw errors.INTERNAL_SERVER_ERROR();
+    }
+  });
