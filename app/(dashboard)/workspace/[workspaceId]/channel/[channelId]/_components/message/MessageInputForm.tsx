@@ -128,6 +128,11 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
           }
         );
 
+        form.reset({ channelId, content: "" });
+        upload.clear();
+
+        setEditorKey((k) => k + 1);
+
         return toast.success("Message Created Successfully");
       },
       onError: (_err, _variables, context) => {

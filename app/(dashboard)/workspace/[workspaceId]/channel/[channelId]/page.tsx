@@ -26,7 +26,7 @@ const ChannelPage = () => {
       <div className="flex h-screen w-full">
         <div className="flex flex-col flex-1 min-w-0">
           {/* Fixed Header */}
-          <ChannelHeader />
+          <ChannelHeader channelName={data?.channelName} />
           {/* Scrollable Messages Area */}
           <div className="flex-1 overflow-hidden mb-4">
             <MessageList />
