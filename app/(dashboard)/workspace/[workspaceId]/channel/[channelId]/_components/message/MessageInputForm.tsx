@@ -104,6 +104,11 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
             };
           }
         );
+
+        return {
+          previousData,
+          tempId,
+        };
       },
 
       onSuccess: () => {
