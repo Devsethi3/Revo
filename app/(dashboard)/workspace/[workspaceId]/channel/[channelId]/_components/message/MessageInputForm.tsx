@@ -111,18 +111,34 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
         };
       },
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: orpc.message.list.key(),
-        });
-        form.reset({ channelId, content: "" });
-        upload.clear();
-        setEditorKey((k) => k + 1);
+      onSuccess: (data, _variables, context) => {
+        queryClient.setQueryData<InfiniteMessages>(
+          ["message.list", channelId],
+          (old) => {
+            if (!old) return old;
+
+            const updatedPages = old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((m) =>
+                m.id === context.tempId ? { ...data } : m
+              ),
+            }));
+
+            return { ...old, pages: updatedPages };
+          }
+        );
 
         return toast.success("Message Created Successfully");
       },
-      onError: (error) => {
-        return toast.error(`Something went wrong: ${error.message}`);
+      onError: (_err, _variables, context) => {
+        if (context?.previousData) {
+          queryClient.setQueryData(
+            ["message.list", channelId],
+            context.previousData
+          );
+        }
+
+        return toast.error("Something went wrong");
       },
     })
   );
