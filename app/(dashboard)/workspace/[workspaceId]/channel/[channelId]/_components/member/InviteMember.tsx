@@ -1,4 +1,7 @@
-import { inviteMemberSchema } from "@/app/schemas/member";
+import {
+  inviteMemberSchema,
+  InviteMemberSchemaType,
+} from "@/app/schemas/member";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,6 +36,10 @@ const InviteMember = () => {
     },
   });
 
+  function onSubmit(values: InviteMemberSchemaType) {
+    console.log(values);
+  }
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -50,7 +57,7 @@ const InviteMember = () => {
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="name"

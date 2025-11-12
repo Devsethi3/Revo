@@ -6,6 +6,9 @@ export const router = {
   workspace: {
     list: listWorkspace,
     create: createWorkspace,
+    member: {
+      invite: ""
+    }
   },
 
   channel: {
