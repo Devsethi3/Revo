@@ -72,6 +72,38 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
           authorAvatar: getAvatar(user.picture, user.email!),
           channelId: channelId,
         };
+
+        queryClient.setQueryData<InfiniteMessages>(
+          ["message.list", channelId],
+          (old) => {
+            if (!old) {
+              return {
+                pages: [
+                  {
+                    items: [optimisticMessage],
+                    nextCursor: undefined,
+                  },
+                ],
+                pageParams: [undefined],
+              } satisfies InfiniteMessages;
+            }
+
+            const firstPage = old.pages[0] ?? {
+              items: [],
+              nextCursor: undefined,
+            };
+
+            const updatedFirstPage: MessagePage = {
+              ...firstPage,
+              items: [optimisticMessage, ...firstPage.items],
+            };
+
+            return {
+              ...old,
+              pages: [updatedFirstPage, ...old.pages.slice(1)],
+            };
+          }
+        );
       },
 
       onSuccess: () => {
