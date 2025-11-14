@@ -20,10 +20,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { orpc } from "@/lib/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const InviteMember = () => {
   const [open, setOpen] = useState(false);
@@ -35,6 +38,14 @@ const InviteMember = () => {
       name: "",
     },
   });
+
+  const inviteMutation = useMutation(
+    orpc.workspace.member.invite.mutationOptions({
+      onSuccess: () => {
+        toast.success("Invitation sent successfully")
+      }
+    })
+  )
 
   function onSubmit(values: InviteMemberSchemaType) {
     console.log(values);
