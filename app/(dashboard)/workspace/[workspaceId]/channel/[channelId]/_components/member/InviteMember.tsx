@@ -42,13 +42,18 @@ const InviteMember = () => {
   const inviteMutation = useMutation(
     orpc.workspace.member.invite.mutationOptions({
       onSuccess: () => {
-        toast.success("Invitation sent successfully")
-      }
+        toast.success("Invitation sent successfully");
+        form.reset();
+        setOpen(false);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
     })
-  )
+  );
 
   function onSubmit(values: InviteMemberSchemaType) {
-    console.log(values);
+    inviteMutation.mutate(values);
   }
 
   return (
