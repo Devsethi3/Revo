@@ -6,7 +6,7 @@ import { requiredAuthMiddleware } from "../middleware/auth";
 import { base } from "../middleware/base";
 import { requiredWorkspaceMiddleware } from "../middleware/workspace";
 import prisma from "@/lib/db";
-import { createMessageSchema } from "../schemas/message";
+import { createMessageSchema, updateMessageSchema } from "../schemas/message";
 import { getAvatar } from "@/lib/get-avatar";
 import { Message } from "@/lib/generated/prisma";
 import { readSecurityMiddleware } from "../middleware/arcjet/read";
@@ -113,5 +113,60 @@ export const listMessages = base
     return {
       items: messages,
       nextCursor,
+    };
+  });
+
+export const updateMessage = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
+  .use(standardSecurityMiddleware)
+  .use(writeSecurityMiddleware)
+  .route({
+    method: "PUT",
+    path: "/messages/:messageId",
+    summary: "Update a message",
+    tags: ["Messages"],
+  })
+  .input(updateMessageSchema)
+  .output(
+    z.object({
+      message: z.custom<Message>(),
+      canEdit: z.boolean(),
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const message = await prisma.message.findFirst({
+      where: {
+        id: input.messageId,
+        channel: {
+          workspaceId: context.workspace.orgCode,
+        },
+      },
+      select: {
+        id: true,
+        authorId: true,
+      },
+    });
+
+    if (!message) {
+      throw errors.NOT_FOUND();
+    }
+
+    if (message.authorId !== context.user.id) {
+      throw errors.FORBIDDEN();
+    }
+
+    const updated = await prisma.message.update({
+      where: {
+        id: input.messageId,
+      },
+      data: {
+        content: input.content,
+      },
+    });
+
+    return {
+      message: updated,
+      canEdit: updated.authorId === context.user.id,
     };
   });
