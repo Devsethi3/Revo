@@ -1,6 +1,6 @@
 // app/router/index.ts
 import { createChannel, getChannel, listChannels } from "./channel";
-import { inviteMember } from "./member";
+import { inviteMember, listMembers } from "./member";
 import { createMessage, listMessages } from "./message";
 import { createWorkspace, listWorkspace } from "./workspace";
 
@@ -9,7 +9,7 @@ export const router = {
     list: listWorkspace,
     create: createWorkspace,
     member: {
-      list: "",
+      list: listMembers,
       invite: inviteMember,
     },
   },

@@ -5,11 +5,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { orpc } from "@/lib/orpc";
+import { useQuery } from "@tanstack/react-query";
 import { Search, Users } from "lucide-react";
 import { useState } from "react";
+import MemberItem from "./MemberItem";
 
 const MembersOverview = () => {
   const [open, setOpen] = useState(false);
+  const { data, isLoading, error } = useQuery(
+    orpc.workspace.member.list.queryOptions()
+  );
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -39,7 +45,9 @@ const MembersOverview = () => {
             {/* Members */}
 
             <div className="max-h-80 overflow-y-auto">
-
+              {data?.map((member) => (
+                <MemberItem key={member.id} member={member} />
+              ))}
             </div>
           </div>
         </PopoverContent>
