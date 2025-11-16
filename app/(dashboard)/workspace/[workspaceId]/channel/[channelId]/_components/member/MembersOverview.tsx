@@ -13,9 +13,23 @@ import MemberItem from "./MemberItem";
 
 const MembersOverview = () => {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const { data, isLoading, error } = useQuery(
     orpc.workspace.member.list.queryOptions()
   );
+
+  const members = data ?? [];
+  const query = search.trim().toLowerCase();
+
+  const filterMembers = query
+    ? members.filter((m) => {
+        const name = m.full_name?.toLowerCase();
+        const email = m.email?.toLowerCase();
+
+        return name?.includes(query) || email?.includes(query);
+      })
+    : members;
+
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -38,16 +52,27 @@ const MembersOverview = () => {
             <div className="p-3 border-b">
               <div className="relative">
                 <Search className="size-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                <Input className="pl-9 h-8" placeholder="Search Members..." />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 h-8"
+                  placeholder="Search Members..."
+                />
               </div>
             </div>
 
             {/* Members */}
 
             <div className="max-h-80 overflow-y-auto">
-              {data?.map((member) => (
-                <MemberItem key={member.id} member={member} />
-              ))}
+              {isLoading ? (
+                <p>Loading</p>
+              ) : filterMembers.length === 0 ? (
+                <p>No Members Found</p>
+              ) : (
+                filterMembers.map((member) => (
+                  <MemberItem key={member.id} member={member} />
+                ))
+              )}
             </div>
           </div>
         </PopoverContent>
