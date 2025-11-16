@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, Users } from "lucide-react";
 import { useState } from "react";
 import MemberItem from "./MemberItem";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MembersOverview = () => {
   const [open, setOpen] = useState(false);
@@ -17,6 +18,10 @@ const MembersOverview = () => {
   const { data, isLoading, error } = useQuery(
     orpc.workspace.member.list.queryOptions()
   );
+
+  if (error) {
+    return <h1>Error: {error.message}</h1>;
+  }
 
   const members = data ?? [];
   const query = search.trim().toLowerCase();
@@ -65,9 +70,19 @@ const MembersOverview = () => {
 
             <div className="max-h-80 overflow-y-auto">
               {isLoading ? (
-                <p>Loading</p>
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 px-4 py-2">
+                    <Skeleton className="size-8 rounded-full" />
+                    <div className="flex-1 space-y-1">
+                      <Skeleton className="h-3 w-32" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                ))
               ) : filterMembers.length === 0 ? (
-                <p>No Members Found</p>
+                <p className="p-4 text-center text-muted-foreground">
+                  No Members Found
+                </p>
               ) : (
                 filterMembers.map((member) => (
                   <MemberItem key={member.id} member={member} />
