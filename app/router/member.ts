@@ -5,9 +5,9 @@ import { requiredAuthMiddleware } from "../middleware/auth";
 import { base } from "../middleware/base";
 import { requiredWorkspaceMiddleware } from "../middleware/workspace";
 import { inviteMemberSchema } from "../schemas/member";
-import { init } from "next/dist/compiled/webpack/webpack";
-import { Users } from "@kinde/management-api-js";
+import { init, Users } from "@kinde/management-api-js";
 import { getAvatar } from "@/lib/get-avatar";
+import { readSecurityMiddleware } from "../middleware/arcjet/read";
 
 export const inviteMember = base
   .use(requiredAuthMiddleware)
@@ -46,4 +46,15 @@ export const inviteMember = base
     } catch (error) {
       throw errors.INTERNAL_SERVER_ERROR();
     }
+  });
+
+export const listMembers = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
+  .use(standardSecurityMiddleware)
+  .use(readSecurityMiddleware)
+  .route({
+    method: "GET",
+    path: "/workspace/members",
+    summary: "List all members",
   });
