@@ -102,6 +102,11 @@ const ThreadSidebar = () => {
             </div>
           </div>
         </div>
+
+        {/* Thread Reply */}
+        <div className="border-t p-4">
+            
+        </div>
       </div>
     </>
   );
