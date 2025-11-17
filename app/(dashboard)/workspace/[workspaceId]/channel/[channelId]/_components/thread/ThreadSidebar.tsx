@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, X } from "lucide-react";
 import Image from "next/image";
 import ThreadReply from "./ThreadReply";
+import ThreadReplyForm from "./ThreadReplyForm";
 
 const messages = [
   {
@@ -105,7 +106,7 @@ const ThreadSidebar = () => {
 
         {/* Thread Reply */}
         <div className="border-t p-4">
-            
+          <ThreadReplyForm />
         </div>
       </div>
     </>
