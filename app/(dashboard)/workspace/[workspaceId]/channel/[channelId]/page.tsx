@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
+import ThreadSidebar from "./_components/thread/ThreadSidebar";
 
 const ChannelPage = () => {
   const { channelId } = useParams<{ channelId: string }>();
@@ -54,6 +55,8 @@ const ChannelPage = () => {
             />
           </div>
         </div>
+
+        <ThreadSidebar />
       </div>
     </>
   );

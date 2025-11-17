@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is your Prisma schema file
+// Learn more at: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -20,17 +17,17 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Foreign key (kinde ides)
+  // Foreign keys (Kinde IDs)
   workspaceId String
   createdById String
 
-  message Message[]
+  messages Message[]
 
   @@unique([workspaceId, name])
 }
 
 model Message {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   content  String
   imageUrl String?
 
@@ -41,6 +38,14 @@ model Message {
   authorEmail  String
   authorName   String
   authorAvatar String
-  channel      Channel? @relation(fields: [channelId], references: [id])
-  channelId    String?
+
+  // Channel relation
+  channel   Channel? @relation(fields: [channelId], references: [id])
+  channelId String?
+
+  // Thread relation
+  parentMessage Message? @relation("MessageThread", fields: [threadId], references: [id], onDelete: Cascade)
+  threadId      String?
+
+  replies Message[] @relation("MessageThread")
 }

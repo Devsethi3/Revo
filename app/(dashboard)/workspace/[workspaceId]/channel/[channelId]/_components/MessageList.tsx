@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import MessageItem from "./message/MessageItem";
 import { orpc } from "@/lib/orpc";
 import { useParams } from "next/navigation";
@@ -55,7 +55,11 @@ const MessageList = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Scroll the the bottom when messages first load
+  const {
+    data: { user },
+  } = useSuspenseQuery(orpc.workspace.list.queryOptions());
+
+  // Scroll to the bottom when messages first load
   useEffect(() => {
     if (!hasInitialScrolled && data?.pages.length) {
       const el = scrollRef.current;
@@ -199,7 +203,7 @@ const MessageList = () => {
               />
             </div>
           ) : (
-            items?.map((msg) => <MessageItem key={msg.id} message={msg} />)
+            items?.map((msg) => <MessageItem key={msg.id} message={msg} currentUserId={user.id} />)
           )}
 
           <div ref={bottomRef}></div>

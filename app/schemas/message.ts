@@ -12,3 +12,4 @@ export const updateMessageSchema = z.object({
 });
 
 export type CreateMessageSchemaType = z.infer<typeof createMessageSchema>;
+export type UpdateMessageSchemaType = z.infer<typeof updateMessageSchema>;
