@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { MessageSquare, X } from "lucide-react";
 import Image from "next/image";
+import ThreadReply from "./ThreadReply";
 
 const messages = [
   {
@@ -80,7 +81,24 @@ const ThreadSidebar = () => {
                     }).format(messages[0].createdAt)}
                   </span>
                 </div>
+
+                <p className="text-sm wrap-break-word prose dark:prose-invert max-w-none">
+                  {messages[0].content}
+                </p>
               </div>
+            </div>
+          </div>
+
+          {/* Thread Replies */}
+          <div className="p-2">
+            <p className="text-xs text-muted-foreground mb-3 px-2">
+              {messages.length} replies
+            </p>
+
+            <div className="space-y-1">
+              {messages.map((reply) => (
+                <ThreadReply message={reply} key={reply.id} />
+              ))}
             </div>
           </div>
         </div>
