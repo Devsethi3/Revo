@@ -3,6 +3,7 @@ import { MessageSquare, X } from "lucide-react";
 import Image from "next/image";
 import ThreadReply from "./ThreadReply";
 import ThreadReplyForm from "./ThreadReplyForm";
+import { useThread } from "@/providers/ThreadProvider";
 
 const messages = [
   {
@@ -38,6 +39,7 @@ const messages = [
 ];
 
 const ThreadSidebar = () => {
+  const { selectedThreadId } = useThread();
   return (
     <>
       <div className="w-120 border-l flex flex-col h-full">
@@ -106,7 +108,7 @@ const ThreadSidebar = () => {
 
         {/* Thread Reply */}
         <div className="border-t p-4">
-          <ThreadReplyForm />
+          <ThreadReplyForm threadId={selectedThreadId!} />
         </div>
       </div>
     </>

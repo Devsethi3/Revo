@@ -38,6 +38,27 @@ export const createMessage = base
       throw errors.FORBIDDEN();
     }
 
+    // if this is a thread reply, validate the parent message
+
+    if (input.threadId) {
+      const parentMessage = await prisma.message.findFirst({
+        where: {
+          id: input.threadId,
+          channel: {
+            workspaceId: context.workspace.orgCode,
+          },
+        },
+      });
+
+      if (
+        !parentMessage ||
+        parentMessage.channelId !== input.channelId ||
+        parentMessage.threadId !== null
+      ) {
+        throw errors.BAD_REQUEST();
+      }
+    }
+
     const created = await prisma.message.create({
       data: {
         content: input.content,
@@ -47,6 +68,7 @@ export const createMessage = base
         authorEmail: context.user.email!,
         authorName: context.user.given_name ?? "John Doe",
         authorAvatar: getAvatar(context.user.picture, context.user.email!),
+        threadId: input.threadId,
       },
     });
 
