@@ -100,9 +100,7 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
           };
         }
 
-        //------------------------------------------------------------------
-        // 📌 MESSAGE LIST MODE
-        //------------------------------------------------------------------
+        //  MESSAGE LIST MODE
         const listKey = ["message.list", channelId];
         await queryClient.cancelQueries({ queryKey: listKey });
 
@@ -127,12 +125,10 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
         return { prevList, listKey };
       },
 
-      //----------------------------------------------------------------------
       onSuccess: () => {
         toast.success("Reaction updated");
       },
 
-      //----------------------------------------------------------------------
       onError: (_, __, ctx) => {
         if (ctx?.threadQueryKey) {
           queryClient.setQueryData(ctx.threadQueryKey, ctx.prevThread);
