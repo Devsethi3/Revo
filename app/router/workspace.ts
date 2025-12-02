@@ -1,4 +1,3 @@
-// app/router/workspace.ts
 import z from "zod";
 import { base } from "../middleware/base";
 import { workspaceSchema } from "../schemas/workspace";

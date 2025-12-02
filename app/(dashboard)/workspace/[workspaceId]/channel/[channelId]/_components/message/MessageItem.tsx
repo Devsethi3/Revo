@@ -1,18 +1,37 @@
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
-import { Message } from "@/lib/generated/prisma";
+import { Message } from "@/lib/generated/prisma/client";
 import { getAvatar } from "@/lib/get-avatar";
 import Image from "next/image";
 import { MessageHoverToolbar } from "../toolbar";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import EditMessage from "../toolbar/EditMessage";
+import { MessageListItem } from "@/lib/types";
+import { MessageSquareIcon } from "lucide-react";
+import { useThread } from "@/providers/ThreadProvider";
+import { orpc } from "@/lib/orpc";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface MessageItemProps {
-  message: Message;
+  message: MessageListItem;
   currentUserId: string;
 }
 
 const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const { openThread } = useThread();
+  const queryClient = useQueryClient();
+
+  const prefetchThread = useCallback(() => {
+    const options = orpc.message.thread.list.queryOptions({
+      input: {
+        messageId: message.id,
+      },
+    });
+    queryClient
+      .prefetchQuery({ ...options, staleTime: 60_000 })
+      .catch(() => {});
+  }, [message.id, queryClient]);
+
   return (
     <>
       <div className="flex space-x-3 relative p-2.5 rounded-lg group hover:bg-muted/50">
@@ -65,12 +84,31 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
                   />
                 </div>
               )}
+
+              {message.repliesCount > 0 && (
+                <button
+                  onClick={() => openThread(message.id)}
+                  type="button"
+                  className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border cursor-pointer"
+                  onMouseEnter={prefetchThread}
+                  onFocus={prefetchThread}
+                >
+                  <MessageSquareIcon className="size-3.5" />
+                  <span>
+                    {message.repliesCount}{" "}
+                    {message.repliesCount === 1 ? "reply" : "replies"}{" "}
+                  </span>
+                  <span className="opacity-0 group-hover:opacity-100 transition">
+                    View Thread
+                  </span>
+                </button>
+              )}
             </>
           )}
         </div>
 
         <MessageHoverToolbar
-          messageid={message.id}
+          messageId={message.id}
           canEdit={message.authorId === currentUserId}
           onEdit={() => setIsEditing(true)}
         />

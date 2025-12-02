@@ -7,6 +7,7 @@ interface ThreadContextType {
   openThread: (messageId: string) => void;
   closeThread: () => void;
   toggleThread: (messageId: string) => void;
+  isThreadOpen: boolean;
 }
 
 const ThreadContext = createContext<ThreadContextType | undefined>(undefined);
@@ -38,6 +39,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     openThread,
     closeThread,
     toggleThread,
+    isThreadOpen,
   };
 
   return (

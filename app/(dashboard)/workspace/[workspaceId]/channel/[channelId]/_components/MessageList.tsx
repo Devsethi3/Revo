@@ -17,7 +17,6 @@ const MessageList = () => {
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
-  const [newMessages, setNewMessages] = useState(false);
   const lastItemIdRef = useRef<string | undefined>(undefined);
 
   const infiniteOptions = orpc.message.list.infiniteOptions({
@@ -59,7 +58,7 @@ const MessageList = () => {
     data: { user },
   } = useSuspenseQuery(orpc.workspace.list.queryOptions());
 
-  // Scroll to the bottom when messages first load
+  // Scroll the the bottom when messages first load
   useEffect(() => {
     if (!hasInitialScrolled && data?.pages.length) {
       const el = scrollRef.current;
@@ -164,10 +163,7 @@ const MessageList = () => {
           el.scrollTop = el.scrollHeight;
         });
 
-        setNewMessages(false);
         setIsAtBottom(true);
-      } else {
-        setNewMessages(true);
       }
     }
 
@@ -179,9 +175,8 @@ const MessageList = () => {
 
     if (!el) return;
 
-    bottomRef.current?.scrollIntoView({ block: "end" });
+    bottomRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
 
-    setNewMessages(false);
     setIsAtBottom(true);
   };
 
@@ -203,7 +198,9 @@ const MessageList = () => {
               />
             </div>
           ) : (
-            items?.map((msg) => <MessageItem key={msg.id} message={msg} currentUserId={user.id} />)
+            items?.map((msg) => (
+              <MessageItem key={msg.id} message={msg} currentUserId={user.id} />
+            ))
           )}
 
           <div ref={bottomRef}></div>

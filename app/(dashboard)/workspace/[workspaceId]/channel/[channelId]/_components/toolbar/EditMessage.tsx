@@ -11,7 +11,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Message } from "@/lib/generated/prisma";
+import { Message } from "@/lib/generated/prisma/client";
 import { orpc } from "@/lib/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

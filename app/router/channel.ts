@@ -1,4 +1,3 @@
-// app/router/channel.ts 
 import z from "zod";
 import { heavyWriteSecurityMiddleware } from "../middleware/arcjet/heavy-write";
 import { standardSecurityMiddleware } from "../middleware/arcjet/standard";
@@ -7,7 +6,7 @@ import { base } from "../middleware/base";
 import { requiredWorkspaceMiddleware } from "../middleware/workspace";
 import { ChannelNameSchema } from "../schemas/channel";
 import prisma from "@/lib/db";
-import { Channel } from "@/lib/generated/prisma";
+import { Channel } from "@/lib/generated/prisma/client";
 import {
   init,
   organization_user,

@@ -1,13 +1,9 @@
+import { SafeContent } from "@/components/rich-text-editor/SafeContent";
+import { Message } from "@/lib/generated/prisma/client";
 import Image from "next/image";
 
 interface ThreadReplyProps {
-  message: {
-    id: number;
-    authorName: string;
-    authorImage: string;
-    content: string;
-    createdAt: Date;
-  };
+  message: Message;
 }
 
 const ThreadReply = ({ message }: ThreadReplyProps) => {
@@ -15,7 +11,7 @@ const ThreadReply = ({ message }: ThreadReplyProps) => {
     <div>
       <div className="flex space-x-3 p-3 hover:bg-muted/30 rounded-lg">
         <Image
-          src={message.authorImage}
+          src={message.authorAvatar}
           alt="Author Avatar"
           width={32}
           height={32}
@@ -35,9 +31,22 @@ const ThreadReply = ({ message }: ThreadReplyProps) => {
             </span>
           </div>
 
-          <p className="text-sm wrap-break-word prose dark:prose-invert max-w-none">
-            {message.content}
-          </p>
+          <SafeContent
+            content={JSON.parse(message.content)}
+            className="text-sm wrap-break-word prose dark:prose-invert max-w-none"
+          />
+
+          {message.imageUrl && (
+            <div className="mt-2">
+              <Image
+                src={message.imageUrl}
+                alt="Message Attachment"
+                width={512}
+                height={512}
+                className="rounded-md max-h-80 object-contain"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

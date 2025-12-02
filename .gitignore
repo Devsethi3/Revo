@@ -30,13 +30,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Environment files (can be committed only if explicitly required)
-.env
-.env.*
+# env files (can opt-in for committing if needed)
 .env*
-
-# Ignore generated Prisma client
-/lib/generated/prisma/
 
 # vercel
 .vercel

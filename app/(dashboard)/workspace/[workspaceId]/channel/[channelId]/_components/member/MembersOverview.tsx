@@ -9,8 +9,8 @@ import { orpc } from "@/lib/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Users } from "lucide-react";
 import { useState } from "react";
-import MemberItem from "./MemberItem";
 import { Skeleton } from "@/components/ui/skeleton";
+import MemberItem from "./MemberItem";
 
 const MembersOverview = () => {
   const [open, setOpen] = useState(false);

@@ -18,6 +18,7 @@ const MemberItem = ({ member }: MemberItemProps) => {
                 src={getAvatar(member.picture ?? null, member.email!)}
                 alt="Member Avatar"
                 fill
+                unoptimized
               />
               <AvatarFallback>
                 {member.full_name?.charAt(0).toUpperCase()}

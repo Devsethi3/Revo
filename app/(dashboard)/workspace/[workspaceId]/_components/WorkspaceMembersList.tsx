@@ -25,6 +25,7 @@ const WorkspaceMembersList = () => {
                   alt="user"
                   className="object-cover"
                   fill
+                  unoptimized
                 />
                 <AvatarFallback>
                   {member.full_name?.charAt(0).toUpperCase()}

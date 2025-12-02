@@ -1,8 +1,8 @@
-import "server-only";
+import 'server-only'
 
-import { headers } from "next/headers";
-import { createRouterClient } from "@orpc/server";
-import { router } from "@/app/router";
+import { headers } from 'next/headers'
+import { createRouterClient } from '@orpc/server'
+import { router } from '@/app/router'
 
 globalThis.$client = createRouterClient(router, {
   /**
@@ -15,4 +15,4 @@ globalThis.$client = createRouterClient(router, {
   context: async () => ({
     headers: await headers(), // provide headers if initial context required
   }),
-});
+})
