@@ -151,9 +151,6 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
     toggleMutation.mutate({ emoji, messageId });
   };
 
-  //----------------------------------------------------------------------
-  // UI
-  //----------------------------------------------------------------------
   return (
     <div className="mt-1 flex items-center gap-1">
       {reactions.map((r) => (
