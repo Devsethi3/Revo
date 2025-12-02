@@ -10,6 +10,7 @@ import { MessageSquareIcon } from "lucide-react";
 import { useThread } from "@/providers/ThreadProvider";
 import { orpc } from "@/lib/orpc";
 import { useQueryClient } from "@tanstack/react-query";
+import ReactionBar from "../reaction/ReactionBar";
 
 interface MessageItemProps {
   message: MessageListItem;
@@ -84,6 +85,12 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
                   />
                 </div>
               )}
+
+              <ReactionBar
+                messageId={message.id}
+                reactions={message.reactions}
+                context={{ type: "list", channelId: message.channelId! }}
+              />
 
               {message.repliesCount > 0 && (
                 <button

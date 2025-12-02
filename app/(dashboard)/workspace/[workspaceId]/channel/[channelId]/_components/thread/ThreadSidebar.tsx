@@ -226,7 +226,11 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                 {data.messages.length > 0 ? (
                   <div className="space-y-1">
                     {data.messages.map((reply) => (
-                      <ThreadReply message={reply} key={reply.id} />
+                      <ThreadReply
+                        message={reply}
+                        key={reply.id}
+                        selectedThreadId={selectedThreadId!}
+                      />
                     ))}
                   </div>
                 ) : (

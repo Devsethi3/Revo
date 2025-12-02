@@ -1,12 +1,15 @@
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { Message } from "@/lib/generated/prisma/client";
 import Image from "next/image";
+import ReactionBar from "../reaction/ReactionBar";
+import { MessageListItem } from "@/lib/types";
 
 interface ThreadReplyProps {
-  message: Message;
+  message: MessageListItem;
+  selectedThreadId: string;
 }
 
-const ThreadReply = ({ message }: ThreadReplyProps) => {
+const ThreadReply = ({ message, selectedThreadId }: ThreadReplyProps) => {
   return (
     <div>
       <div className="flex space-x-3 p-3 hover:bg-muted/30 rounded-lg">
@@ -47,6 +50,12 @@ const ThreadReply = ({ message }: ThreadReplyProps) => {
               />
             </div>
           )}
+
+          <ReactionBar
+            context={{ type: "thread", threadId: selectedThreadId }}
+            reactions={message.reactions}
+            messageId={message.id}
+          />
         </div>
       </div>
     </div>
