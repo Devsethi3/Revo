@@ -55,15 +55,11 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
 
   const toggleMutation = useMutation(
     orpc.message.reaction.toggle.mutationOptions({
-      //----------------------------------------------------------------------
       // Optimistic Update
-      //----------------------------------------------------------------------
       onMutate: async (vars: { messageId: string; emoji: string }) => {
         const emoji = vars.emoji;
 
-        //------------------------------------------------------------------
-        // 📌 THREAD MODE
-        //------------------------------------------------------------------
+        // THREAD MODE
         if (context?.type === "thread") {
           const threadOptions = orpc.message.thread.list.queryOptions({
             input: { messageId: context.threadId },
