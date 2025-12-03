@@ -187,7 +187,7 @@ export const listMessages = base
       authorAvatar: msg.authorAvatar,
       authorName: msg.authorName,
       threadId: msg.threadId,
-      repliesCount: msg._count.replies,
+      replyCount: msg._count.replies,
       reactions: groupReactions(
         msg.MessageReaction.map((r) => ({
           emoji: r.emoji,
@@ -315,7 +315,7 @@ export const listThreadReplies = base
       createdAt: parentRow.createdAt,
       updatedAt: parentRow.updatedAt,
       threadId: parentRow.threadId,
-      repliesCount: parentRow._count?.replies ?? 0,
+      replyCount: parentRow._count?.replies ?? 0,
       reactions: groupReactions(
         parentRow.MessageReaction.map((r) => ({
           emoji: r.emoji,
@@ -351,7 +351,7 @@ export const listThreadReplies = base
       createdAt: msg.createdAt,
       updatedAt: msg.updatedAt,
       threadId: msg.threadId,
-      repliesCount: msg._count?.replies ?? 0,
+      replyCount: msg._count?.replies ?? 0,
       reactions: groupReactions(
         msg.MessageReaction.map((r) => ({
           emoji: r.emoji,

@@ -1,3 +1,4 @@
+import { generateThreadSummary } from "./ai";
 import { createChannel, getChannel, listChannels } from "./channel";
 import { inviteMember, listMembers } from "./member";
 import {
@@ -34,6 +35,16 @@ export const router = {
     },
     thread: {
       list: listThreadReplies,
+    },
+  },
+  ai: {
+    // compose: {
+    //   generate: "",
+    // },
+    thread: {
+      summary: {
+        generate: generateThreadSummary,
+      },
     },
   },
 };
