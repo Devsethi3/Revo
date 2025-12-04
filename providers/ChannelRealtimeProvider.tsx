@@ -17,7 +17,6 @@ interface ChannelRealtimeProviderProps {
 }
 
 type MessageListPage = { items: RealtimeMessageType[]; nextCursor?: string };
-
 type InfiniteMessages = InfiniteData<MessageListPage>;
 
 const ChannelRealtimeContext =
