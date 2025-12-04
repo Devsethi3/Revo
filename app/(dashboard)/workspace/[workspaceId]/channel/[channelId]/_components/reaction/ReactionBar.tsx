@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { MessageListItem } from "@/lib/types";
+import { useChannelRealtime } from "@/providers/ChannelRealtimeProvider";
 
 type ThreadContext = { type: "thread"; threadId: string };
 type ListContext = { type: "list"; channelId: string };
@@ -31,6 +32,7 @@ type InfiniteReplies = InfiniteData<MessagePage>;
 const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
   const { channelId } = useParams<{ channelId: string }>();
   const queryClient = useQueryClient();
+  const { send } = useChannelRealtime();
 
   const bump = (
     rxns: GroupReactionSchemaType[],
@@ -121,7 +123,12 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
         return { prevList, listKey };
       },
 
-      onSuccess: () => {
+      onSuccess: (data) => {
+        send({
+          type: "reaction:updated",
+          payload: data,
+        });
+        
         toast.success("Reaction updated");
       },
 

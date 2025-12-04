@@ -100,6 +100,56 @@ export function ChannelRealtimeProvider({
           return;
         }
 
+        if (event.type === "reaction:updated") {
+          const { messageId, reactions } = event.payload;
+
+          queryClient.setQueryData<InfiniteMessages>(
+            ["message.list", channelId],
+
+            (old) => {
+              if (!old) return old;
+
+              const pages = old.pages.map((p) => ({
+                ...p,
+                items: p.items.map((m) =>
+                  m.id === messageId ? { ...m, reactions } : m
+                ),
+              }));
+
+              return { ...old, pages };
+            }
+          );
+          return;
+        }
+
+        if (event.type === "message:replies:increment") {
+          const { messageId, delta } = event.payload;
+
+          queryClient.setQueryData<InfiniteMessages>(
+            ["message.list", channelId],
+
+            (old) => {
+              if (!old) return old;
+
+              const pages = old.pages.map((p) => ({
+                ...p,
+                items: p.items.map((m) =>
+                  m.id === messageId
+                    ? {
+                        ...m,
+                        replyCount: Math.max(
+                          0,
+                          Number(m.replyCount ?? 0) + Number(delta)
+                        ),
+                      }
+                    : m
+                ),
+              }));
+              return { ...old, pages };
+            }
+          );
+          return;
+        }
       } catch (error) {
         console.log("Channel Provider Error", error);
       }

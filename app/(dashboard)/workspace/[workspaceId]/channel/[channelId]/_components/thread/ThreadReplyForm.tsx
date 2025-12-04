@@ -22,6 +22,7 @@ import { Message } from "@/lib/generated/prisma/client";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { getAvatar } from "@/lib/get-avatar";
 import { MessageListItem } from "@/lib/types";
+import { useChannelRealtime } from "@/providers/ChannelRealtimeProvider";
 
 interface ThreadReplyFormProps {
   threadId: string;
@@ -33,6 +34,7 @@ const ThreadReplyForm = ({ threadId, user }: ThreadReplyFormProps) => {
   const upload = useAttachmentUpload();
   const [editorKey, setEditorKey] = useState(0);
   const queryClient = useQueryClient();
+  const { send } = useChannelRealtime();
 
   const form = useForm({
     resolver: zodResolver(createMessageSchema),
@@ -102,13 +104,11 @@ const ThreadReplyForm = ({ threadId, user }: ThreadReplyFormProps) => {
             const pages = old.pages.map((page) => ({
               ...page,
               items: page.items.map((m) =>
-                m.id === threadId
-                  ? { ...m, replyCount: m.replyCount + 1 }
-                  : m
+                m.id === threadId ? { ...m, replyCount: m.replyCount + 1 } : m
               ),
             }));
 
-            return {...old, pages }
+            return { ...old, pages };
           }
         );
 
@@ -117,8 +117,16 @@ const ThreadReplyForm = ({ threadId, user }: ThreadReplyFormProps) => {
       onSuccess: (_data, _vars, ctx) => {
         queryClient.invalidateQueries({ queryKey: ctx.listOptions.queryKey });
         form.reset({ channelId, content: "", threadId });
+
         upload.clear();
+
         setEditorKey((k) => k + 1);
+
+        send({
+          type: "message:replies:increment",
+          payload: { messageId: threadId, delta: 1 },
+        });
+
         toast.success("thread created");
       },
       onError: (_err, _vars, ctx) => {
