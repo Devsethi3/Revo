@@ -8,9 +8,12 @@ import {
 import { orpc } from "@/lib/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Users } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import MemberItem from "./MemberItem";
+import { usePresence } from "@/hooks/use-presence";
+import { useParams } from "next/navigation";
+import { User } from "@/app/schemas/realtime";
 
 const MembersOverview = () => {
   const [open, setOpen] = useState(false);
@@ -19,9 +22,8 @@ const MembersOverview = () => {
     orpc.workspace.member.list.queryOptions()
   );
 
-  if (error) {
-    return <h1>Error: {error.message}</h1>;
-  }
+  const params = useParams();
+  const workspaceId = params.workspaceId;
 
   const members = data ?? [];
   const query = search.trim().toLowerCase();
@@ -34,6 +36,33 @@ const MembersOverview = () => {
         return name?.includes(query) || email?.includes(query);
       })
     : members;
+
+  const { data: workspaceData } = useQuery(orpc.workspace.list.queryOptions());
+
+  const currentUser = useMemo(() => {
+    if (!workspaceData?.user) return null;
+
+    return {
+      id: workspaceData.user.id,
+      full_name: workspaceData.user.given_name,
+      email: workspaceData.user.email,
+      picture: workspaceData.user.picture,
+    } satisfies User;
+  }, [workspaceData?.user]);
+
+  const { onlineUsers } = usePresence({
+    room: `workspace-${workspaceId}`,
+    currentUser: currentUser,
+  });
+
+  const onlineUserIds = useMemo(
+    () => new Set(onlineUsers.map((u) => u.id)),
+    [onlineUsers]
+  );
+
+  if (error) {
+    return <h1>Error: {error.message}</h1>;
+  }
 
   return (
     <>
@@ -85,7 +114,11 @@ const MembersOverview = () => {
                 </p>
               ) : (
                 filterMembers.map((member) => (
-                  <MemberItem key={member.id} member={member} />
+                  <MemberItem
+                    key={member.id}
+                    member={member}
+                    isOnline={member.id ? onlineUserIds.has(member.id) : false}
+                  />
                 ))
               )}
             </div>

@@ -1,4 +1,5 @@
 import z from "zod";
+import { groupReactionSchema } from "./message";
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -25,3 +26,49 @@ export const PresenceMessageSchema = z.union([
 ]);
 
 export type PresenceMessageSchemaType = z.infer<typeof PresenceMessageSchema>;
+
+// Minimal message shape for realtime events
+export const RealtimeMessageSchema = z.object({
+  id: z.string(),
+  content: z.string().optional().nullable(),
+  imageUrl: z.url().optional().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  authorId: z.string(),
+  authorEmail: z.email().optional().nullable(),
+  authorName: z.string().optional().nullable(),
+  authorAvatar: z.string().optional().nullable(),
+  channelId: z.string().nullable(),
+  threadId: z.string().optional().nullable(),
+  reactions: z.array(groupReactionSchema).optional(),
+  replyCount: z.number().optional(),
+});
+
+export type RealtimeMessageType = z.infer<typeof RealtimeMessageSchema>;
+
+// Channel Events
+
+export const ChannelEventSchema = z.union([
+  z.object({
+    type: z.literal("message:created"),
+    payload: z.object({ message: RealtimeMessageSchema }),
+  }),
+  z.object({
+    type: z.literal("message:updated"),
+    payload: z.object({ message: RealtimeMessageSchema }),
+  }),
+  z.object({
+    type: z.literal("reaction:updated"),
+    payload: z.object({
+      messageId: z.string(),
+      reactions: z.array(groupReactionSchema),
+    }),
+  }),
+
+  z.object({
+    type: z.literal("message:replies:increment"),
+    payload: z.object({ messageId: z.string(), delta: z.number() }),
+  }),
+]);
+
+export type ChannelEventType = z.infer<typeof ChannelEventSchema>;

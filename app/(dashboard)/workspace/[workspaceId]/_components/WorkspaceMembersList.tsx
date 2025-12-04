@@ -15,6 +15,9 @@ const WorkspaceMembersList = () => {
   const {
     data: { members },
   } = useSuspenseQuery(orpc.channel.list.queryOptions());
+  
+  const params = useParams();
+  const workspaceId = params.workspaceId;
 
   const { data: workspaceData } = useQuery(orpc.workspace.list.queryOptions());
 
@@ -28,9 +31,6 @@ const WorkspaceMembersList = () => {
       picture: workspaceData.user.picture,
     } satisfies User;
   }, [workspaceData?.user]);
-
-  const params = useParams();
-  const workspaceId = params.workspaceId;
 
   const { onlineUsers } = usePresence({
     room: `workspace-${workspaceId}`,
@@ -72,7 +72,7 @@ const WorkspaceMembersList = () => {
                     ? "bg-green-500"
                     : "bg-gray-500"
                 )}
-              ></div>
+              />
             </div>
 
             <div className="flex-1 min-w-0">

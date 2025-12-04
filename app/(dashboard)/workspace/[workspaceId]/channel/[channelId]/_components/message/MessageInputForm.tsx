@@ -26,6 +26,7 @@ import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
 import { Message } from "@/lib/generated/prisma/client";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { getAvatar } from "@/lib/get-avatar";
+import { useChannelRealtime } from "@/providers/ChannelRealtimeProvider";
 
 interface MessageInputProps {
   channelId: string;
@@ -39,6 +40,7 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
   const queryClient = useQueryClient();
   const [editorKey, setEditorKey] = useState(0);
   const upload = useAttachmentUpload();
+  const { send } = useChannelRealtime();
 
   const form = useForm({
     resolver: zodResolver(createMessageSchema),
@@ -47,6 +49,7 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
       content: "",
     },
   });
+
   const createMessageMutation = useMutation(
     orpc.message.create.mutationOptions({
       onMutate: async (data) => {
@@ -132,6 +135,8 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
         upload.clear();
 
         setEditorKey((k) => k + 1);
+
+        send({ type: "message:created", payload: { message: data } });
 
         return toast.success("Message Created Successfully");
       },
