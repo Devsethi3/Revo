@@ -23,6 +23,7 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { getAvatar } from "@/lib/get-avatar";
 import { MessageListItem } from "@/lib/types";
 import { useChannelRealtime } from "@/providers/ChannelRealtimeProvider";
+import { useThreadRealtime } from "@/providers/ThreadRealtimeProvider";
 
 interface ThreadReplyFormProps {
   threadId: string;
@@ -35,6 +36,7 @@ const ThreadReplyForm = ({ threadId, user }: ThreadReplyFormProps) => {
   const [editorKey, setEditorKey] = useState(0);
   const queryClient = useQueryClient();
   const { send } = useChannelRealtime();
+  const { send: sendThread } = useThreadRealtime();
 
   const form = useForm({
     resolver: zodResolver(createMessageSchema),
@@ -114,13 +116,15 @@ const ThreadReplyForm = ({ threadId, user }: ThreadReplyFormProps) => {
 
         return { listOptions, previous };
       },
-      onSuccess: (_data, _vars, ctx) => {
+      onSuccess: (data, _vars, ctx) => {
         queryClient.invalidateQueries({ queryKey: ctx.listOptions.queryKey });
         form.reset({ channelId, content: "", threadId });
 
         upload.clear();
 
         setEditorKey((k) => k + 1);
+
+        sendThread({ type: "thread:reply:created", payload: { reply: data } });
 
         send({
           type: "message:replies:increment",

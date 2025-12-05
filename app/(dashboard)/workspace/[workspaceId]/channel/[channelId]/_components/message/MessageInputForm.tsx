@@ -74,6 +74,7 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
           authorName: user.given_name ?? "John Doe",
           authorAvatar: getAvatar(user.picture, user.email!),
           channelId: channelId,
+          threadId: null,
         };
 
         queryClient.setQueryData<InfiniteMessages>(

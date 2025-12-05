@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Popover,
   PopoverContent,
@@ -83,6 +84,7 @@ const SummarizeThread = ({ messageId }: SummarizeThreadProps) => {
             </span>
           </Button>
         </PopoverTrigger>
+
         <PopoverContent className="w-100 p-0" align="end">
           <div className="flex items-center justify-between px-4 py-3 border-b">
             <div className="flex items-center gap-2">
@@ -103,7 +105,8 @@ const SummarizeThread = ({ messageId }: SummarizeThreadProps) => {
             )}
           </div>
 
-          <div className="px-4 py-3 max-h-80 overflow-y-auto">
+          {/* Scrollable area */}
+          <ScrollArea className="h-[300px] border px-4 py-3 rounded-b-md rounded-t-none">
             {error ? (
               <div>
                 <p className="text-destructive">{error.message}</p>
@@ -124,17 +127,28 @@ const SummarizeThread = ({ messageId }: SummarizeThreadProps) => {
                 {summaryText}
               </MessageResponse>
             ) : status === "submitted" || status === "streaming" ? (
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-11/12" />
+                  <Skeleton className="h-4 w-10/12" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-9/12" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-11/12" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-8/12" />
+                </div>
               </div>
             ) : (
               <div className="text-sm text-muted-foreground">
                 Click summarize to generate
               </div>
             )}
-          </div>
+          </ScrollArea>
         </PopoverContent>
       </Popover>
     </>

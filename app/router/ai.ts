@@ -13,7 +13,7 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_LLM_KEY,
 });
 
-const MODEL_ID = "x-ai/grok-4.1-fast:free";
+const MODEL_ID = "amazon/nova-2-lite-v1:free";
 
 const model = openrouter.chat(MODEL_ID);
 

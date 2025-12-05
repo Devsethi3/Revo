@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { MessageListItem } from "@/lib/types";
 import { useChannelRealtime } from "@/providers/ChannelRealtimeProvider";
+import { useOptionalThreadRealtime } from "@/providers/ThreadRealtimeProvider";
 
 type ThreadContext = { type: "thread"; threadId: string };
 type ListContext = { type: "list"; channelId: string };
@@ -33,6 +34,7 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
   const { channelId } = useParams<{ channelId: string }>();
   const queryClient = useQueryClient();
   const { send } = useChannelRealtime();
+  const threadRealtime = useOptionalThreadRealtime();
 
   const bump = (
     rxns: GroupReactionSchemaType[],
@@ -128,7 +130,16 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
           type: "reaction:updated",
           payload: data,
         });
-        
+
+        if (context && context.type === "thread" && threadRealtime) {
+          const threadId = context.threadId;
+
+          threadRealtime.send({
+            type: "thread:reaction:updated",
+            payload: { ...data, threadId },
+          });
+        }
+
         toast.success("Reaction updated");
       },
 
