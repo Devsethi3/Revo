@@ -11,7 +11,8 @@ import {
   RegisterLink,
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
-import { ThemeToggle } from "../ui/theme-toggle";
+import Image from "next/image";
+import ThemeSwitcher from "../ui/theme-switcher";
 
 const menuItems = [
   { name: "Features", href: "#link" },
@@ -48,17 +49,12 @@ export const HeroHeader = () => {
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
-              <Link
-                href="/"
-                aria-label="home"
-                className="flex items-center space-x-2"
-              >
-                <MountainIcon />
-              </Link>
+           
+           <LogoIcon />
 
               <div className="flex items-center gap-4">
                 <div className="md:hidden block">
-                  <ThemeToggle />
+                  <ThemeSwitcher />
                 </div>
                 <Button
                   variant={"outline"}
@@ -105,7 +101,7 @@ export const HeroHeader = () => {
               </div>
 
               <div className="md:block hidden">
-                <ThemeToggle />
+                <ThemeSwitcher />
               </div>
 
               {isLoading ? null : (
