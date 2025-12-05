@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ThreadSidebar from "./_components/thread/ThreadSidebar";
 import { ThreadProvider, useThread } from "@/providers/ThreadProvider";
 import { ChannelRealtimeProvider } from "@/providers/ChannelRealtimeProvider";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ChannelPage = () => {
   const { channelId } = useParams<{ channelId: string }>();
@@ -47,9 +48,9 @@ const ChannelPage = () => {
             <ChannelHeader channelName={data?.channelName} />
           )}
           {/* Scrollable Messages Area */}
-          <div className="flex-1 overflow-hidden mb-4">
+          <ScrollArea className="flex-1 overflow-hidden mb-4">
             <MessageList />
-          </div>
+          </ScrollArea>
 
           {/* Fixed Input */}
           <div className="border-t bg-background p-4">
