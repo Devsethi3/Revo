@@ -56,14 +56,21 @@ export const HeroHeader = () => {
                 <MountainIcon />
               </Link>
 
-              <button
-                onClick={() => setMenuState(!menuState)}
-                aria-label={menuState == true ? "Close Menu" : "Open Menu"}
-                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
-              >
-                <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
-                <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
-              </button>
+              <div className="flex items-center gap-4">
+                <div className="md:hidden block">
+                  <ThemeToggle />
+                </div>
+                <Button
+                  variant={"outline"}
+                  size={"icon"}
+                  onClick={() => setMenuState(!menuState)}
+                  aria-label={menuState == true ? "Close Menu" : "Open Menu"}
+                  className="relative z-20 lg:hidden"
+                >
+                  <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-4 duration-200" />
+                  <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-4 -rotate-180 scale-0 opacity-0 duration-200" />
+                </Button>
+              </div>
             </div>
 
             <div className="absolute inset-0 m-auto hidden size-fit lg:block">
@@ -97,7 +104,9 @@ export const HeroHeader = () => {
                 </ul>
               </div>
 
-              <ThemeToggle />
+              <div className="md:block hidden">
+                <ThemeToggle />
+              </div>
 
               {isLoading ? null : (
                 <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
