@@ -13,6 +13,7 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs";
 import Image from "next/image";
 import ThemeSwitcher from "../ui/theme-switcher";
+import LogoIcon from "../general/LogoIcon";
 
 const menuItems = [
   { name: "Features", href: "#link" },
