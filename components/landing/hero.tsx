@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import AboutSection from "./about";
 import FeaturesSection from "./features";
+import CTASection from "./cta";
 
 const transitionVariants = {
   item: {
@@ -163,6 +164,7 @@ export default function HeroSection() {
       </main>
       <AboutSection />
       <FeaturesSection />
+      <CTASection />
     </>
   );
 }
