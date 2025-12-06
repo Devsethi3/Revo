@@ -14,6 +14,7 @@ import Image from "next/image";
 import AboutSection from "./about";
 import FeaturesSection from "./features";
 import CTASection from "./cta";
+import Footer from "./footer";
 
 const transitionVariants = {
   item: {
@@ -165,6 +166,7 @@ export default function HeroSection() {
       <AboutSection />
       <FeaturesSection />
       <CTASection />
+      <Footer />
     </>
   );
 }
