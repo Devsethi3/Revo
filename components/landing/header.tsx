@@ -50,10 +50,9 @@ export const HeroHeader = () => {
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
-           
-           <LogoIcon />
+              <LogoIcon />
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="md:hidden block">
                   <ThemeSwitcher />
                 </div>

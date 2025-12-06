@@ -1,8 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRightIcon, ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowUpRightIcon, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { HeroHeader } from "./header";
@@ -11,6 +10,9 @@ import {
   AnnouncementTag,
   AnnouncementTitle,
 } from "../kibo-ui/announcement";
+import Image from "next/image";
+import AboutSection from "./about";
+import FeaturesSection from "./features";
 
 const transitionVariants = {
   item: {
@@ -36,136 +38,91 @@ export default function HeroSection() {
   return (
     <>
       <HeroHeader />
-      <main className="overflow-hidden">
+      <main className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
+        {/* Modern Gradient Mesh Background (Variable based) */}
         <div
-          aria-hidden
-          className="absolute inset-0 isolate hidden opacity-65 contain-strict lg:block"
+          aria-hidden="true"
+          className="absolute inset-0 z-0 overflow-hidden"
         >
-          <div className="w-140 h-320 -translate-y-87.5 absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.08)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]" />
-          <div className="h-320 absolute left-0 top-0 w-60 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
-          <div className="h-320 -translate-y-87.5 absolute left-0 top-0 w-60 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
+          <div className="absolute -top-[20%] left-1/2 h-[1000px] w-[1000px] -translate-x-1/2 rounded-[100%] bg-primary/5 blur-[80px]" />
+          <div className="absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle_at_50%_0%,transparent_0%,var(--color-background)_70%)]" />
+
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size:[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-[0.15]" />
         </div>
 
-        <section>
-          <div className="relative pt-24 md:pt-36">
+        <section className="relative z-10 pt-20 lg:pt-32">
+          <div className="mx-auto max-w-7xl px-6 text-center">
+            {/* Badge */}
+            <div className="flex justify-center">
+              <Announcement className="bg-muted/50 hover:bg-muted/80 border-border/40 transition-all">
+                <AnnouncementTag className="bg-primary text-primary-foreground">
+                  New
+                </AnnouncementTag>
+                <AnnouncementTitle className="text-muted-foreground">
+                  Revo 2.0 is now public
+                  <ArrowUpRightIcon
+                    className="ml-1 shrink-0 opacity-70"
+                    size={14}
+                  />
+                </AnnouncementTitle>
+              </Announcement>
+            </div>
+
+            {/* Headline */}
+            <TextEffect
+              preset="fade-in-blur"
+              speedSegment={0.3}
+              as="h1"
+              className="mx-auto mt-8 max-w-4xl text-balance text-3xl font-bold tracking-tight text-foreground xl:text-6xl lg:text-5xl md:text-4xl"
+            >
+              Connect. Collaborate. Create with Revo
+            </TextEffect>
+
+            {/* Subheadline */}
+            <TextEffect
+              per="line"
+              preset="fade-in-blur"
+              speedSegment={0.3}
+              delay={0.5}
+              as="p"
+              className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground md:text-xl"
+            >
+              Revo brings your team together in real time. Chat, share files,
+              and collaborate seamlessly in one unified workspace designed for
+              speed.
+            </TextEffect>
+
+            {/* CTA Buttons */}
             <AnimatedGroup
               variants={{
                 container: {
                   visible: {
                     transition: {
-                      delayChildren: 1,
+                      staggerChildren: 0.05,
+                      delayChildren: 0.75,
                     },
                   },
                 },
-                item: {
-                  hidden: {
-                    opacity: 0,
-                    y: 20,
-                  },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      type: "spring",
-                      bounce: 0.3,
-                      duration: 2,
-                    },
-                  },
-                },
+                ...transitionVariants,
               }}
-              className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32"
+              className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
-              <Image
-                src="/not-found.png"
-                alt="background"
-                className="hidden size-full dark:block"
-                width="3276"
-                height="4095"
-              />
+              <Button asChild size="lg">
+                <Link href="#get-started">
+                  Start for free <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+
+              <Button asChild size="lg" variant="outline">
+                <Link href="#demo" className="flex items-center gap-2">
+                  <PlayCircle className="h-4 w-4 text-muted-foreground" />
+                  Watch Demo
+                </Link>
+              </Button>
             </AnimatedGroup>
 
-            <div
-              aria-hidden
-              className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"
-            />
-
-            <div className="mx-auto max-w-7xl px-6">
-              <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
-                <Announcement>
-                  <AnnouncementTag>Introducing Revo</AnnouncementTag>
-                  <AnnouncementTitle>
-                    Real Time Collaboration Tool
-                    <ArrowUpRightIcon
-                      className="shrink-0 text-muted-foreground"
-                      size={16}
-                    />
-                  </AnnouncementTitle>
-                </Announcement>
-
-                <TextEffect
-                  preset="fade-in-blur"
-                  speedSegment={0.3}
-                  as="h1"
-                  className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
-                >
-                  Connect. Collaborate. Create — With Revo.
-                </TextEffect>
-
-                <TextEffect
-                  per="line"
-                  preset="fade-in-blur"
-                  speedSegment={0.3}
-                  delay={0.5}
-                  as="p"
-                  className="mx-auto mt-8 max-w-2xl text-balance text-lg"
-                >
-                  Revo brings your team together in real time — chat, share
-                  files, and collaborate seamlessly in one place. Work smarter
-                  and stay connected, wherever you are.
-                </TextEffect>
-
-                <AnimatedGroup
-                  variants={{
-                    container: {
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.05,
-                          delayChildren: 0.75,
-                        },
-                      },
-                    },
-                    ...transitionVariants,
-                  }}
-                  className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row"
-                >
-                  <div
-                    key={1}
-                    className="bg-foreground/10 rounded-[calc(var(--radius-xl)+0.125rem)] border p-0.5"
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      className="rounded-xl px-5 text-base"
-                    >
-                      <Link href="#link">
-                        <span className="text-nowrap">Get Started Free</span>
-                      </Link>
-                    </Button>
-                  </div>
-                  <Button
-                    key={2}
-                    asChild
-                    size="lg"
-                    variant="ghost"
-                    className="h-10.5 rounded-xl px-5"
-                  >
-                    <Link href="#link">
-                      <span className="text-nowrap">Watch Demo</span>
-                    </Link>
-                  </Button>
-                </AnimatedGroup>
-              </div>
-            </div>
+            {/* Dashboard Mockup Visualization */}
 
             <AnimatedGroup
               variants={{
@@ -184,15 +141,17 @@ export default function HeroSection() {
                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
                   <Image
                     className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
-                    src="/mail2.webp"
-                    alt="Revo app preview"
+                    src="/demo-dark.png"
+                    unoptimized
+                    alt="app screen"
                     width="2700"
                     height="1440"
                   />
                   <Image
                     className="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
-                    src="/mail2-light.webp"
-                    alt="Revo app preview"
+                    src="/demo-light.png"
+                    unoptimized
+                    alt="app screen"
                     width="2700"
                     height="1440"
                   />
@@ -202,6 +161,8 @@ export default function HeroSection() {
           </div>
         </section>
       </main>
+      <AboutSection />
+      <FeaturesSection />
     </>
   );
 }

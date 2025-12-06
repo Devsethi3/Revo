@@ -14,6 +14,7 @@ import ThreadSidebarSkeleton from "./ThreadbarSidebarSkeleton";
 import { useEffect, useRef, useState } from "react";
 import SummarizeThread from "./SummarizeThread";
 import { ThreadRealtimeProvider } from "@/providers/ThreadRealtimeProvider";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ThreadSidebarProps {
   user: KindeUser<Record<string, unknown>>;
@@ -155,7 +156,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto relative">
+        <ScrollArea className="flex-1 overflow-y-auto relative">
           {/* Error State */}
           {isError && (
             <div className="flex items-center justify-center h-full">
@@ -224,10 +225,14 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
 
                 {/* Thread Replies */}
                 <div className="p-2">
-                  <p className="text-xs text-muted-foreground mb-3 px-2">
-                    {data.messages.length}{" "}
-                    {data.messages.length === 1 ? "reply" : "replies"}
-                  </p>
+                  <div className="p-2">
+                    {data.messages.length > 0 && (
+                      <p className="text-xs text-muted-foreground mb-3 px-2">
+                        {data.messages.length}{" "}
+                        {data.messages.length === 1 ? "reply" : "replies"}
+                      </p>
+                    )}
+                  </div>
 
                   {data.messages.length > 0 ? (
                     <div className="space-y-1">
@@ -262,7 +267,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
               <ChevronDown className="size-4" />
             </Button>
           )}
-        </div>
+        </ScrollArea>
 
         {/* Thread Reply Input - Only show when thread is selected */}
         {selectedThreadId && (

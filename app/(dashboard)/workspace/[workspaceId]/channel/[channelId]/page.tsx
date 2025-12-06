@@ -48,9 +48,9 @@ const ChannelPage = () => {
             <ChannelHeader channelName={data?.channelName} />
           )}
           {/* Scrollable Messages Area */}
-          <ScrollArea className="flex-1 overflow-hidden mb-4">
+          <div className="flex-1 overflow-hidden mb-4">
             <MessageList />
-          </ScrollArea>
+          </div>
 
           {/* Fixed Input */}
           <div className="border-t bg-background p-4">
