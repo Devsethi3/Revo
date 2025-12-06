@@ -13,7 +13,7 @@ const features = [
     className: "md:col-span-2",
     // Custom background pattern for this specific card
     pattern: (
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,transparent_1px,var(--color-border)_1px),linear-gradient(to_bottom,transparent_1px,var(--color-border)_1px)] bg-size:[24px_24px] opacity-[0.03] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,transparent_1px,var(--color-border)_1px),linear-gradient(to_bottom,transparent_1px,var(--color-border)_1px)] bg-size:[24px_24px] opacity-[0.03] mask-[radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
     ),
   },
   {
@@ -58,11 +58,14 @@ const itemVariants = {
 
 export default function AboutSection() {
   return (
-    <section id="about" className="relative overflow-hidden bg-background py-24 md:py-32">
+    <section
+      id="about"
+      className="relative overflow-hidden bg-background py-24 md:py-32"
+    >
       {/* --- Section Background Pattern --- */}
       <div className="absolute inset-0 z-0">
         {/* Dot Pattern */}
-        <div className="absolute inset-0 h-full w-full bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+        <div className="absolute inset-0 h-full w-full bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] background-size:[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
         {/* Subtle Gradient Spotlights */}
         <div className="absolute left-0 top-1/4 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
         <div className="absolute right-0 bottom-1/4 h-96 w-96 translate-x-1/2 rounded-full bg-accent/5 blur-3xl" />
@@ -103,7 +106,7 @@ export default function AboutSection() {
               key={index}
               variants={itemVariants}
               className={cn(
-                "group relative overflow-hidden rounded-3xl border border-border bg-card p-8 transition-all hover:border-primary/20 hover:shadow-lg",
+                "group relative overflow-hidden rounded-3xl border bg-card p-8 transition-all border-primary/20 shadow-lg",
                 feature.className
               )}
             >
@@ -122,9 +125,9 @@ export default function AboutSection() {
 
               {/* Internal Card Decoration (Pattern) */}
               {feature.pattern}
-              
+
               {/* Hover Glow Effect */}
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/5 blur-2xl transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/5 blur-2xl transition-opacity duration-500 opacity-100" />
             </motion.div>
           ))}
         </motion.div>
