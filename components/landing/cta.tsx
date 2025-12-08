@@ -74,7 +74,7 @@ export default function CTASection() {
               <Button
                 asChild
                 size="lg"
-                className="group h-12 min-w-40 rounded-full px-8 text-base shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:shadow-primary/40"
+                className="group h-12 min-w-40 px-8 text-base"
               >
                 <Link href="/signup">
                   Get Started 
@@ -85,7 +85,7 @@ export default function CTASection() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="h-12 min-w-40 rounded-full border-border bg-background px-8 text-base hover:bg-muted/50"
+                className="h-12 min-w-40 border-border bg-background px-8 text-base hover:bg-muted/50"
               >
                 <Link href="/contact">Contact Sales</Link>
               </Button>
@@ -94,7 +94,7 @@ export default function CTASection() {
             <div className="mt-8 flex items-center justify-center gap-x-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-x-2">
                 <CheckIcon className="h-4 w-4 text-primary" />
-                <span>14-day free trial</span>
+                <span>Start for free</span>
               </div>
               <div className="flex items-center gap-x-2">
                 <CheckIcon className="h-4 w-4 text-primary" />

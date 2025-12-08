@@ -22,10 +22,10 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
-           <LogoIcon />
+            <LogoIcon />
             <p className="mt-4 text-sm text-muted-foreground">
               The collaborative workspace for high-performance teams. Designed
-              in California.
+              in Delhi.
             </p>
           </div>
 

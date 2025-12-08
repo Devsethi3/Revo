@@ -1,4 +1,3 @@
-import { HeroHeader } from "@/components/landing/header";
 import HeroSection from "@/components/landing/hero";
 
 const HomePage = () => {

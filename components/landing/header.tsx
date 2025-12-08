@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import ThemeSwitcher from "../ui/theme-switcher";
 import LogoIcon from "../general/LogoIcon";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 const menuItems = [
   { name: "Features", href: "#link" },
@@ -54,7 +55,7 @@ export const HeroHeader = () => {
 
               <div className="flex items-center gap-3">
                 <div className="md:hidden block">
-                  <ThemeSwitcher />
+                  <ThemeToggle />
                 </div>
                 <Button
                   variant={"outline"}
@@ -101,7 +102,7 @@ export const HeroHeader = () => {
               </div>
 
               <div className="md:block hidden">
-                <ThemeSwitcher />
+                <ThemeToggle />
               </div>
 
               {isLoading ? null : (

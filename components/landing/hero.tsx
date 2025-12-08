@@ -108,7 +108,7 @@ export default function HeroSection() {
                 },
                 ...transitionVariants,
               }}
-              className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+              className="mt-10 flex items-center justify-center gap-4"
             >
               <Button asChild size="lg">
                 <Link href="#get-started">
@@ -164,7 +164,6 @@ export default function HeroSection() {
         </section>
       </main>
       <AboutSection />
-      <FeaturesSection />
       <CTASection />
       <Footer />
     </>
