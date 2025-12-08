@@ -15,6 +15,7 @@ import Image from "next/image";
 import ThemeSwitcher from "../ui/theme-switcher";
 import LogoIcon from "../general/LogoIcon";
 import { ThemeToggle } from "../ui/theme-toggle";
+import UserNav from "@/app/(dashboard)/workspace/_components/UserNav";
 
 const menuItems = [
   { name: "Features", href: "#link" },
@@ -36,6 +37,7 @@ export const HeroHeader = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   return (
     <header>
       <nav
