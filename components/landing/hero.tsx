@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRightIcon, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import {
 } from "../kibo-ui/announcement";
 import Image from "next/image";
 import AboutSection from "./about";
-import FeaturesSection from "./features";
 import CTASection from "./cta";
 import Footer from "./footer";
 
@@ -82,13 +80,27 @@ export default function HeroSection() {
             </TextEffect>
 
             {/* Subheadline */}
+            {/* Small Screen Version */}
             <TextEffect
               per="line"
               preset="fade-in-blur"
               speedSegment={0.3}
               delay={0.5}
               as="p"
-              className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground md:text-xl"
+              className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground md:hidden"
+            >
+              Revo brings your team together in real time. Chat, share files,
+              and collaborate seamless.
+            </TextEffect>
+
+            {/* Large Screen Version */}
+            <TextEffect
+              per="line"
+              preset="fade-in-blur"
+              speedSegment={0.3}
+              delay={0.5}
+              as="p"
+              className="mx-auto mt-6 hidden max-w-2xl text-balance text-lg text-muted-foreground md:block md:text-xl"
             >
               Revo brings your team together in real time. Chat, share files,
               and collaborate seamlessly in one unified workspace designed for
