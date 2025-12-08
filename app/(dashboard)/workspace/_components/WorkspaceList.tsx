@@ -11,7 +11,6 @@ import { orpc } from "@/lib/orpc";
 import { cn } from "@/lib/utils";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useSuspenseQuery } from "@tanstack/react-query";
-
 const colorCombinations = [
   // Deep Coffee Brown
   "bg-[#4B342A] hover:bg-[#3E2B23] text-white",
@@ -22,18 +21,22 @@ const colorCombinations = [
   // Dark Amber / Caffeine Yellow
   "bg-[#DFAF37] hover:bg-[#C49B30] text-black",
 
-  // Espresso Black
-  "bg-[#1A1A1A] hover:bg-[#000000] text-white",
-
-  // Matcha Deep Green (warm green tones)
+  // Matcha Deep Green
   "bg-[#446644] hover:bg-[#3A563A] text-white",
 
   // Burgundy Roast
   "bg-[#6C2E3A] hover:bg-[#5B2631] text-white",
 
-  // Deep Slate Mocha (warm gray)
+  // Deep Slate Mocha
   "bg-[#4A4F4D] hover:bg-[#3E4240] text-white",
+
+  // NEW: Hazelnut Cream (soft warm beige)
+  "bg-[#D9C3A3] hover:bg-[#C7B095] text-black",
+
+  // NEW: Burnt Sienna Roast (warm deep orange-red)
+  "bg-[#B55A3A] hover:bg-[#9E4D32] text-white",
 ];
+
 
 const getWorkspaceColor = (id: string) => {
   const charSum = id
