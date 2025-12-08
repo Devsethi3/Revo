@@ -13,11 +13,26 @@ import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 const colorCombinations = [
-  "bg-blue-500 hover:bg-blue-600 text-white",
-  "bg-green-500 hover:bg-green-600 text-white",
-  "bg-red-500 hover:bg-red-600 text-white",
-  "bg-yellow-500 hover:bg-yellow-600 text-white",
-  "bg-purple-500 hover:bg-purple-600 text-white",
+  // Deep Coffee Brown
+  "bg-[#4B342A] hover:bg-[#3E2B23] text-white",
+
+  // Toasted Caramel
+  "bg-[#C58B45] hover:bg-[#B07A3C] text-white",
+
+  // Dark Amber / Caffeine Yellow
+  "bg-[#DFAF37] hover:bg-[#C49B30] text-black",
+
+  // Espresso Black
+  "bg-[#1A1A1A] hover:bg-[#000000] text-white",
+
+  // Matcha Deep Green (warm green tones)
+  "bg-[#446644] hover:bg-[#3A563A] text-white",
+
+  // Burgundy Roast
+  "bg-[#6C2E3A] hover:bg-[#5B2631] text-white",
+
+  // Deep Slate Mocha (warm gray)
+  "bg-[#4A4F4D] hover:bg-[#3E4240] text-white",
 ];
 
 const getWorkspaceColor = (id: string) => {
