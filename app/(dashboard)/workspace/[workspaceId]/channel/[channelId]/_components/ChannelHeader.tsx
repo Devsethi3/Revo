@@ -3,7 +3,14 @@
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import InviteMember from "./member/InviteMember";
 import MembersOverview from "./member/MembersOverview";
-import { Hash, Menu, PanelLeftClose, PanelLeft, UserPlus } from "lucide-react";
+import {
+  Hash,
+  Menu,
+  PanelLeftClose,
+  PanelLeft,
+  UserPlus,
+  PanelRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -34,13 +41,13 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="icon"
                 onClick={toggle}
-                className="size-8 sm:size-9 shrink-0"
+                className="size-9 shrink-0"
               >
                 {/* Mobile: Always show menu icon */}
-                <Menu className="size-4 sm:size-5 md:hidden" />
+                <PanelRight className="size-4 sm:size-5 md:hidden" />
                 {/* Desktop: Show toggle icons based on state */}
                 {isOpen ? (
                   <PanelLeftClose className="size-4 sm:size-5 hidden md:block" />
@@ -78,20 +85,12 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
         {/* Mobile: Popover menu */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="sm:hidden size-8"
-            >
+            <Button variant="outline" size="icon" className="sm:hidden size-9">
               <UserPlus className="size-4" />
               <span className="sr-only">More options</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="w-auto p-2"
-            sideOffset={8}
-          >
+          <PopoverContent align="end" className="w-auto p-2" sideOffset={8}>
             <div className="flex flex-col gap-2">
               <MembersOverview />
               <InviteMember />
