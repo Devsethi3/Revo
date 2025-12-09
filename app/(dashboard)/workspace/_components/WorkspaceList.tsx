@@ -11,32 +11,19 @@ import { orpc } from "@/lib/orpc";
 import { cn } from "@/lib/utils";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useSuspenseQuery } from "@tanstack/react-query";
-const colorCombinations = [
-  // Deep Coffee Brown
-  "bg-[#4B342A] hover:bg-[#3E2B23] text-white",
 
-  // Toasted Caramel
-  "bg-[#C58B45] hover:bg-[#B07A3C] text-white",
-
-  // Dark Amber / Caffeine Yellow
-  "bg-[#DFAF37] hover:bg-[#C49B30] text-black",
-
-  // Matcha Deep Green
-  "bg-[#446644] hover:bg-[#3A563A] text-white",
-
-  // Burgundy Roast
-  "bg-[#6C2E3A] hover:bg-[#5B2631] text-white",
-
-  // Deep Slate Mocha
-  "bg-[#4A4F4D] hover:bg-[#3E4240] text-white",
-
-  // NEW: Hazelnut Cream (soft warm beige)
-  "bg-[#D9C3A3] hover:bg-[#C7B095] text-black",
-
-  // NEW: Burnt Sienna Roast (warm deep orange-red)
-  "bg-[#B55A3A] hover:bg-[#9E4D32] text-white",
+const colorCombinations = [ 
+  "bg-amber-600 hover:bg-amber-700 text-white", // Deep caffeine/golden
+  "bg-orange-700 hover:bg-orange-800 text-white", // Rich burnt orange
+  "bg-emerald-700 hover:bg-emerald-800 text-white", // Deep forest green
+  "bg-teal-700 hover:bg-teal-800 text-white", // Deep teal
+  "bg-indigo-700 hover:bg-indigo-800 text-white", // Rich indigo
+  "bg-rose-700 hover:bg-rose-800 text-white", // Deep rose
+  "bg-violet-700 hover:bg-violet-800 text-white", // Deep violet
+  "bg-cyan-700 hover:bg-cyan-800 text-white", // Deep cyan
+  "bg-lime-700 hover:bg-lime-800 text-white", // Deep lime
+  "bg-fuchsia-700 hover:bg-fuchsia-800 text-white", // Deep fuchsia
 ];
-
 
 const getWorkspaceColor = (id: string) => {
   const charSum = id

@@ -29,7 +29,6 @@ const MessageList = () => {
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     select: (data) => ({
-      // pages: [...data.pages].reverse(),
       pages: [...data.pages]
         .map((p) => ({
           ...p,
@@ -58,7 +57,6 @@ const MessageList = () => {
     data: { user },
   } = useSuspenseQuery(orpc.workspace.list.queryOptions());
 
-  // Scroll the the bottom when messages first load
   useEffect(() => {
     if (!hasInitialScrolled && data?.pages.length) {
       const el = scrollRef.current;
@@ -70,8 +68,6 @@ const MessageList = () => {
       }
     }
   }, [hasInitialScrolled, data?.pages.length]);
-
-  // Keep view pinned to bottom on late content growth (eg. images)
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -94,14 +90,12 @@ const MessageList = () => {
 
     el.addEventListener("load", onImageLoad, true);
 
-    // ResizeObserver watches for size changes in the container
     const resizeObserver = new ResizeObserver(() => {
       scrollToBottomIfNeeded();
     });
 
     resizeObserver.observe(el);
 
-    // MutationObserver watches for DOM changes (e.g. images loading, content updates)
     const mutationObserver = new MutationObserver(() => {
       scrollToBottomIfNeeded();
     });
@@ -184,12 +178,12 @@ const MessageList = () => {
     <>
       <div className="relative h-full">
         <div
-          className="h-full overflow-y-auto px-4 flex flex-col space-y-1"
+          className="h-full overflow-y-auto px-2 sm:px-3 md:px-4 py-2 flex flex-col space-y-0.5 sm:space-y-1"
           ref={scrollRef}
           onScroll={handleScroll}
         >
           {isEmpty ? (
-            <div className="flex h-full pt-4">
+            <div className="flex h-full pt-2 sm:pt-4">
               <EmptyState
                 title="No Messages Yet"
                 description="Start the conversation by sending the first message"
@@ -206,23 +200,26 @@ const MessageList = () => {
           <div ref={bottomRef}></div>
         </div>
 
+        {/* Loading indicator */}
         {isFetchingNextPage && (
-          <div className="pointer-events-none absolute top-0 left-0 right-0 z-20 flex items-center justify-center py-2">
-            <div className="flex items-center gap-2 rounded-md bg-linear-to-b from-white/80 to-transparent dark:from-neutral-900/80 backdrop-blur px-3 py-1">
-              <Loader2 className="size-4 animate-spin text-muted-foreground" />
-              <span>Loading previous messages...</span>
+          <div className="pointer-events-none absolute top-0 left-0 right-0 z-20 flex items-center justify-center py-1.5 sm:py-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 rounded-md bg-linear-to-b from-white/80 to-transparent dark:from-neutral-900/80 backdrop-blur px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">
+              <Loader2 className="size-3 sm:size-4 animate-spin text-muted-foreground" />
+              <span className="hidden xs:inline">Loading previous messages...</span>
+              <span className="xs:hidden">Loading...</span>
             </div>
           </div>
         )}
 
+        {/* Scroll to bottom button */}
         {!isAtBottom && (
           <Button
             type="button"
             size="sm"
             onClick={scrollToBottom}
-            className="absolute bottom-4 right-8 z-20 size-10 rounded-full hover:shadow-xl transition-all duration-200"
+            className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 md:right-8 z-20 size-8 sm:size-10 rounded-full hover:shadow-xl transition-all duration-200 p-0"
           >
-            <ChevronDown className="size-4" />
+            <ChevronDown className="size-3.5 sm:size-4" />
           </Button>
         )}
       </div>
