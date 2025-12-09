@@ -73,8 +73,6 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
     lastMessageCountRef.current = messageCount;
   }, [messageCount]);
 
-  // Keep view pinned to bottom on late content growth (eg. images)
-
   useEffect(() => {
     const el = scrollRef.current;
 
@@ -96,14 +94,12 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
 
     el.addEventListener("load", onImageLoad, true);
 
-    // ResizeObserver watches for size changes in the container
     const resizeObserver = new ResizeObserver(() => {
       scrollToBottomIfNeeded();
     });
 
     resizeObserver.observe(el);
 
-    // MutationObserver watches for DOM changes (e.g. images loading, content updates)
     const mutationObserver = new MutationObserver(() => {
       scrollToBottomIfNeeded();
     });
@@ -122,7 +118,6 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
     };
   }, [isAtBottom]);
 
-  // Show skeleton while loading
   if (isLoading) {
     return <ThreadSidebarSkeleton />;
   }
@@ -139,28 +134,36 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
 
   return (
     <ThreadRealtimeProvider threadId={selectedThreadId!}>
-      <div className="w-120 border-l flex flex-col h-full">
+      <div className="w-full h-full flex flex-col bg-background">
         {/* Header */}
-        <div className="border-b h-14 px-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="size-4" />
-            <span className="font-medium">Thread</span>
+        <div className="border-b h-12 sm:h-14 px-2 sm:px-4 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <MessageSquare className="size-4 shrink-0" />
+            <span className="font-medium text-sm sm:text-base truncate">
+              Thread
+            </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <SummarizeThread messageId={selectedThreadId!} />
-            <Button onClick={closeThread} variant="outline" size="icon">
+            <Button
+              onClick={closeThread}
+              variant="ghost"
+              size="icon"
+              className="size-8 sm:size-9"
+            >
               <X className="size-4" />
+              <span className="sr-only">Close thread</span>
             </Button>
           </div>
         </div>
 
         {/* Main Content */}
-        <ScrollArea className="flex-1 overflow-y-auto relative">
+        <div className="flex-1 min-h-0 relative">
           {/* Error State */}
           {isError && (
-            <div className="flex items-center justify-center h-full">
-              <div className="flex flex-col items-center gap-2 px-4 text-center">
+            <div className="flex items-center justify-center h-full p-4">
+              <div className="flex flex-col items-center gap-2 text-center max-w-xs">
                 <p className="text-sm font-medium text-destructive">
                   Failed to load thread
                 </p>
@@ -180,21 +183,21 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
             {data && (
               <>
                 {/* Parent Message */}
-                <div className="p-4 border-b bg-muted/20">
-                  <div className="flex space-x-3">
+                <div className="p-3 sm:p-4 border-b bg-muted/20">
+                  <div className="flex gap-2 sm:gap-3">
                     <Image
                       src={data.parent.authorAvatar}
                       alt={`${data.parent.authorName}'s avatar`}
                       width={32}
                       height={32}
-                      className="size-8 rounded-full shrink-0"
+                      className="size-7 sm:size-8 rounded-full shrink-0"
                     />
                     <div className="flex-1 space-y-1 min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium text-sm">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                        <span className="font-medium text-xs sm:text-sm">
                           {data.parent.authorName}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[10px] sm:text-xs text-muted-foreground">
                           {new Intl.DateTimeFormat("en-US", {
                             hour: "numeric",
                             minute: "numeric",
@@ -206,7 +209,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                       </div>
                       <SafeContent
                         content={JSON.parse(data.parent.content)}
-                        className="text-sm wrap-break-word prose dark:prose-invert max-w-none"
+                        className="text-xs sm:text-sm wrap-break-word prose prose-sm dark:prose-invert max-w-none"
                       />
                       {data.parent.imageUrl && (
                         <div className="mt-2">
@@ -215,7 +218,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                             alt="Message attachment"
                             width={400}
                             height={300}
-                            className="rounded-lg border max-w-full h-auto"
+                            className="rounded-lg border max-w-full h-auto max-h-40 sm:max-h-52 md:max-h-64 object-contain"
                           />
                         </div>
                       )}
@@ -224,10 +227,10 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                 </div>
 
                 {/* Thread Replies */}
-                <div className="p-2">
-                  <div className="p-2">
+                <div className="p-2 sm:p-3">
+                  <div className="px-1 sm:px-2 mb-2 sm:mb-3">
                     {data.messages.length > 0 && (
-                      <p className="text-xs text-muted-foreground mb-3 px-2">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">
                         {data.messages.length}{" "}
                         {data.messages.length === 1 ? "reply" : "replies"}
                       </p>
@@ -235,7 +238,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                   </div>
 
                   {data.messages.length > 0 ? (
-                    <div className="space-y-1">
+                    <div className="space-y-0.5 sm:space-y-1">
                       {data.messages.map((reply) => (
                         <ThreadReply
                           message={reply}
@@ -245,8 +248,8 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                       ))}
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center py-8">
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex items-center justify-center py-6 sm:py-8 px-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground text-center">
                         No replies yet. Be the first to reply!
                       </p>
                     </div>
@@ -257,21 +260,23 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
             )}
           </div>
 
+          {/* Scroll to bottom button */}
           {!isAtBottom && (
             <Button
               type="button"
-              size="sm"
+              size="icon"
               onClick={scrollToBottom}
-              className="absolute bottom-4 right-8 z-20 size-10 rounded-full hover:shadow-xl transition-all duration-200"
+              className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-20 size-8 sm:size-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <ChevronDown className="size-4" />
+              <span className="sr-only">Scroll to bottom</span>
             </Button>
           )}
-        </ScrollArea>
+        </div>
 
-        {/* Thread Reply Input - Only show when thread is selected */}
+        {/* Thread Reply Input */}
         {selectedThreadId && (
-          <div className="border-t p-4">
+          <div className="border-t p-2 sm:p-3 md:p-4 shrink-0">
             <ThreadReplyForm threadId={selectedThreadId} user={user} />
           </div>
         )}
