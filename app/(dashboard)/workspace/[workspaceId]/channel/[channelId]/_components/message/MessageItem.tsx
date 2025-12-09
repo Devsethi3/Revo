@@ -19,6 +19,7 @@ interface MessageItemProps {
 
 const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { openThread } = useThread();
   const queryClient = useQueryClient();
 
@@ -33,21 +34,36 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
       .catch(() => {});
   }, [message.id, queryClient]);
 
+  const handleMessageTap = () => {
+    // Only toggle on mobile/touch devices
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      setShowMobileMenu((prev) => !prev);
+    }
+  };
+
   return (
     <>
-      <div className="flex space-x-3 relative p-2.5 rounded-lg group hover:bg-muted/50">
+      <div
+        className="flex gap-2 sm:gap-3 relative p-2 sm:p-2.5 rounded-lg group hover:bg-muted/50 transition-colors"
+        onClick={handleMessageTap}
+      >
+        {/* Avatar */}
         <Image
           src={getAvatar(message.authorAvatar, message.authorEmail)}
           alt="User Avatar"
           width={32}
           height={32}
-          className="size-8 rounded-lg"
+          className="size-7 sm:size-8 rounded-lg shrink-0"
         />
 
-        <div className="flex-1 space-y-1 min-w-0">
-          <div className="flex items-center gap-x-2">
-            <p className="font-medium leading-none">{message.authorName}</p>
-            <p className="text-xs text-muted-foreground leading-none">
+        {/* Message Content */}
+        <div className="flex-1 space-y-0.5 sm:space-y-1 min-w-0">
+          {/* Author & Timestamp */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <p className="font-medium text-sm sm:text-base leading-none">
+              {message.authorName}
+            </p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground leading-none">
               {new Intl.DateTimeFormat("en-GB", {
                 day: "numeric",
                 month: "short",
@@ -61,6 +77,7 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
             </p>
           </div>
 
+          {/* Message Body */}
           {isEditing ? (
             <EditMessage
               message={message}
@@ -70,42 +87,48 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
           ) : (
             <>
               <SafeContent
-                className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
+                className="text-sm wrap-break-word prose prose-sm sm:prose-base dark:prose-invert max-w-none marker:text-primary"
                 content={JSON.parse(message.content)}
               />
 
+              {/* Image Attachment */}
               {message.imageUrl && (
-                <div className="mt-3">
+                <div className="mt-2 sm:mt-3">
                   <Image
                     src={message.imageUrl}
                     alt="Message Attachment"
                     width={512}
                     height={512}
-                    className="rounded-md max-h-80 w-auto object-contain"
+                    className="rounded-md max-h-48 sm:max-h-64 md:max-h-80 w-auto object-contain"
                   />
                 </div>
               )}
 
+              {/* Reactions */}
               <ReactionBar
                 messageId={message.id}
                 reactions={message.reactions}
                 context={{ type: "list", channelId: message.channelId! }}
               />
 
+              {/* Thread Reply Count */}
               {message.replyCount > 0 && (
                 <button
-                  onClick={() => openThread(message.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openThread(message.id);
+                  }}
                   type="button"
-                  className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-border cursor-pointer"
+                  className="mt-1 inline-flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded px-1 py-0.5 -ml-1 transition-colors"
                   onMouseEnter={prefetchThread}
                   onFocus={prefetchThread}
                 >
-                  <MessageSquareIcon className="size-3.5" />
+                  <MessageSquareIcon className="size-3 sm:size-3.5" />
                   <span>
                     {message.replyCount}{" "}
-                    {message.replyCount === 1 ? "reply" : "replies"}{" "}
+                    {message.replyCount === 1 ? "reply" : "replies"}
                   </span>
-                  <span className="opacity-0 group-hover:opacity-100 transition">
+                  <span className="hidden sm:inline opacity-0 group-hover:opacity-100 transition-opacity">
                     View Thread
                   </span>
                 </button>
@@ -114,10 +137,16 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
           )}
         </div>
 
+        {/* Toolbar */}
         <MessageHoverToolbar
           messageId={message.id}
           canEdit={message.authorId === currentUserId}
-          onEdit={() => setIsEditing(true)}
+          onEdit={() => {
+            setIsEditing(true);
+            setShowMobileMenu(false);
+          }}
+          showMobile={showMobileMenu}
+          onClose={() => setShowMobileMenu(false)}
         />
       </div>
     </>
