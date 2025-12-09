@@ -162,14 +162,14 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
   }
 
   return (
-    <>
+    <div className="w-full">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
             name="content"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-1">
                 <FormControl>
                   <MessageComposer
                     key={editorKey}
@@ -180,13 +180,13 @@ const MessageInputForm = ({ channelId, user }: MessageInputProps) => {
                     upload={upload}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs sm:text-sm px-1" />
               </FormItem>
             )}
           />
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

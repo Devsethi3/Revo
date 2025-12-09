@@ -2,7 +2,7 @@ import RichTextEditor from "@/components/rich-text-editor/Editor";
 import ImageUploadModal from "@/components/rich-text-editor/ImageUploadModal";
 import { Button } from "@/components/ui/button";
 import { useAttachmentUploadType } from "@/hooks/use-attachment-upload";
-import { ImageIcon, Send } from "lucide-react";
+import { ImageIcon, Loader2, Send } from "lucide-react";
 import AttachmentChip from "./AttachmentChip";
 
 interface MessageComposerProps {
@@ -30,9 +30,16 @@ const MessageComposer = ({
             type="button"
             size="sm"
             onClick={onSubmit}
+            className="h-8 sm:h-9 px-2 sm:px-3"
           >
-            <Send className="size-4 mr-1" />
-            Send
+            {isSubmitting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                <Send className="size-4" />
+                <span className="hidden sm:inline ml-1.5">Send</span>
+              </>
+            )}
           </Button>
         }
         footerLeft={
@@ -44,9 +51,10 @@ const MessageComposer = ({
               type="button"
               size="sm"
               variant="outline"
+              className="h-8 sm:h-9 px-2 sm:px-3"
             >
-              <ImageIcon className="size-4 mr-1" />
-              Attach
+              <ImageIcon className="size-4" />
+              <span className="hidden sm:inline ml-1.5">Attach</span>
             </Button>
           )
         }

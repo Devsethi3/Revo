@@ -36,7 +36,7 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "max-w-none min-h-[125px] focus:outline-none p-4 prose dark:prose-invert w-full marker:text-primary",
+          "max-w-none min-h-[80px] sm:min-h-[100px] md:min-h-[125px] focus:outline-none p-2.5 sm:p-3 md:p-4 prose prose-sm sm:prose-base dark:prose-invert w-full marker:text-primary",
       },
     },
   });
@@ -47,11 +47,13 @@ const RichTextEditor = ({
         <Menubar editor={editor} />
         <EditorContent
           editor={editor}
-          className="max-h-[200px] overflow-y-auto"
+          className="max-h-[150px] sm:max-h-[175px] md:max-h-[200px] overflow-y-auto"
         />
 
-        <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-input bg-card">
-          <div className="min-h-8 flex items-center">{footerLeft}</div>
+        <div className="flex items-center justify-between gap-2 px-2 sm:px-3 py-1.5 sm:py-2 border-t border-input bg-card">
+          <div className="min-h-7 sm:min-h-8 flex items-center overflow-hidden">
+            {footerLeft}
+          </div>
           <div className="shrink-0">{sendButton}</div>
         </div>
       </div>
