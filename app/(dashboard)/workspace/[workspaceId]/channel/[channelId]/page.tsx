@@ -68,7 +68,7 @@ const ChannelPage = () => {
 
         {/* Thread Sidebar - Full screen on mobile, side panel on larger screens */}
         {isThreadOpen && (
-          <div className="w-full sm:w-80 md:w-96 lg:w-[400px] xl:w-[450px] shrink-0 border-l border-border bg-background mr-7">
+          <div className="w-full sm:w-80 md:w-96 lg:w-[400px] xl:w-[450px] shrink-0 border-l border-border bg-background">
             <ThreadSidebar
               user={data?.currentUser as KindeUser<Record<string, unknown>>}
             />
