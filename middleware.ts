@@ -43,10 +43,12 @@ async function existingMiddleware(req: NextRequest) {
 export default createMiddleware(
   aj,
   withAuth(existingMiddleware, {
-    publicPaths: ["/", "/api/uploadthing"],
+    publicPaths: ["/", "/api/uploadthing", "/_next/static", "/_next/image"],
   }) as NextMiddleware
 );
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|/rpc).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$|rpc).*)",
+  ],
 };
