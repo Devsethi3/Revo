@@ -1,13 +1,13 @@
 import "@/lib/orpc.server"; // pre-rendering for ssr
 import type { Metadata } from "next";
-import { Comfortaa } from "next/font/google";
+import { Grandstander } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Providers } from "@/lib/providers";
 import { Toaster } from "@/components/ui/sonner";
 
-const font = Comfortaa();
+const font = Grandstander();
 
 export const metadata: Metadata = {
   title: "Create Next App",

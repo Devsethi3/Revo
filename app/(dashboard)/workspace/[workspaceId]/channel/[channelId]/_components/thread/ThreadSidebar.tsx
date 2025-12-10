@@ -178,7 +178,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="h-full overflow-y-auto"
+            className="h-full scroll-smooth overflow-y-auto"
           >
             {data && (
               <>
