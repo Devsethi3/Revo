@@ -144,11 +144,11 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
             </span>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <SummarizeThread messageId={selectedThreadId!} />
             <Button
               onClick={closeThread}
-              variant="ghost"
+              variant="outline"
               size="icon"
               className="size-8 sm:size-9"
             >

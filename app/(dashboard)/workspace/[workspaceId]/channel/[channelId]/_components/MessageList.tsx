@@ -8,6 +8,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/general/EmptyState";
 import { ChevronDown, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import MessageSkeleton from "./MessageSkeleton";
 
 const MessageList = () => {
   const { channelId } = useParams<{ channelId: string }>();
@@ -178,11 +180,13 @@ const MessageList = () => {
     <>
       <div className="relative h-full">
         <div
-          className="h-full overflow-y-auto px-2 sm:px-3 md:px-4 py-2 flex flex-col space-y-0.5 sm:space-y-1"
+          className="h-full overflow-y-auto scroll-smooth px-2 sm:px-3 md:px-4 py-2 flex flex-col space-y-0.5 sm:space-y-1"
           ref={scrollRef}
           onScroll={handleScroll}
         >
-          {isEmpty ? (
+          {isLoading ? (
+            <MessageSkeleton />
+          ) : isEmpty ? (
             <div className="flex h-full pt-2 sm:pt-4">
               <EmptyState
                 title="No Messages Yet"
@@ -205,7 +209,9 @@ const MessageList = () => {
           <div className="pointer-events-none absolute top-0 left-0 right-0 z-20 flex items-center justify-center py-1.5 sm:py-2">
             <div className="flex items-center gap-1.5 sm:gap-2 rounded-md bg-linear-to-b from-white/80 to-transparent dark:from-neutral-900/80 backdrop-blur px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">
               <Loader2 className="size-3 sm:size-4 animate-spin text-muted-foreground" />
-              <span className="hidden xs:inline">Loading previous messages...</span>
+              <span className="hidden xs:inline">
+                Loading previous messages...
+              </span>
               <span className="xs:hidden">Loading...</span>
             </div>
           </div>

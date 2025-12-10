@@ -56,7 +56,7 @@ const WorkspaceList = () => {
                         isActive ? "rounded-lg" : "rounded-xl hover:rounded-lg"
                       )}
                     >
-                      <span className="text-xs font-semibold">
+                      <span className="text-xs font-semibold capitalize">
                         {workspace.avatar}
                       </span>
                     </Button>

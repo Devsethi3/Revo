@@ -66,7 +66,10 @@ export function MessageHoverToolbar({
 
       {/* Mobile: Dropdown Menu */}
       <div className="md:hidden absolute right-1 top-1">
-        <DropdownMenu open={showMobile} onOpenChange={(open) => !open && onClose?.()}>
+        <DropdownMenu
+          open={showMobile}
+          onOpenChange={(open) => !open && onClose?.()}
+        >
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -81,14 +84,14 @@ export function MessageHoverToolbar({
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={handleThread}>
               <MessageSquareText className="size-4 mr-2" />
-              Reply in thread
+              <span className="text-sm">Reply thread</span>
             </DropdownMenuItem>
             {canEdit && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleEdit}>
                   <Pencil className="size-4 mr-2" />
-                  Edit message
+                  <span className="text-sm">Edit message</span>
                 </DropdownMenuItem>
               </>
             )}
