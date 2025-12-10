@@ -119,7 +119,7 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
                     openThread(message.id);
                   }}
                   type="button"
-                  className="mt-1 inline-flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded px-1 py-0.5 -ml-1 transition-colors"
+                  className="mt-1 cursor-pointer inline-flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded px-1 py-0.5 -ml-1 transition-colors"
                   onMouseEnter={prefetchThread}
                   onFocus={prefetchThread}
                 >

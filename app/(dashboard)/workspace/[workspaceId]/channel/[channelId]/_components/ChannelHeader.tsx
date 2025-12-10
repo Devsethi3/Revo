@@ -37,7 +37,7 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
       {/* Left Section */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         {/* Sidebar Toggle Button */}
-        <TooltipProvider delayDuration={0}>
+        <TooltipProvider delayDuration={700}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

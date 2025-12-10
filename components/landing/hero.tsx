@@ -100,7 +100,7 @@ export default function HeroSection() {
               speedSegment={0.3}
               delay={0.5}
               as="p"
-              className="mx-auto mt-6 hidden max-w-2xl text-balance text-lg text-muted-foreground md:block md:text-xl"
+              className="mx-auto mt-6 hidden max-w-[700px] text-balance text-lg text-muted-foreground md:block md:text-xl"
             >
               Revo brings your team together in real time. Chat, share files,
               and collaborate seamlessly in one unified workspace designed for

@@ -190,7 +190,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                       alt={`${data.parent.authorName}'s avatar`}
                       width={32}
                       height={32}
-                      className="size-7 sm:size-8 rounded-full shrink-0"
+                      className="size-7 sm:size-8 rounded-lg shrink-0"
                     />
                     <div className="flex-1 space-y-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">

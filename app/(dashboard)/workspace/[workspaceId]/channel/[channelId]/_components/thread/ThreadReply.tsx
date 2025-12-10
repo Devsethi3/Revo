@@ -18,7 +18,7 @@ const ThreadReply = ({ message, selectedThreadId }: ThreadReplyProps) => {
           alt="Author Avatar"
           width={32}
           height={32}
-          className="size-8 rounded-full shrink-0 mt-1"
+          className="size-8 rounded-lg shrink-0 mt-1"
         />
         <div className="flex-1 space-y-1 min-w-0">
           <div className="flex items-center space-x-2">
