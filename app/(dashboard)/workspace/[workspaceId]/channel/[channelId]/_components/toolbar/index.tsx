@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useThread } from "@/providers/ThreadProvider";
-import { MessageSquareText, MoreVertical, Pencil, Smile } from "lucide-react";
+import { MessageSquareText, MoreVertical, Pencil } from "lucide-react";
 
 interface MessageHoverToolbarProps {
   messageId: string;
@@ -64,13 +62,13 @@ export function MessageHoverToolbar({
         </Button>
       </div>
 
-      {/* Mobile: Dropdown Menu */}
+      {/* Mobile: Popover Menu */}
       <div className="md:hidden absolute right-1 top-1">
-        <DropdownMenu
+        <Popover
           open={showMobile}
           onOpenChange={(open) => !open && onClose?.()}
         >
-          <DropdownMenuTrigger asChild>
+          <PopoverTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
@@ -80,23 +78,37 @@ export function MessageHoverToolbar({
               <MoreVertical className="size-4" />
               <span className="sr-only">Message options</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={handleThread}>
-              <MessageSquareText className="size-4 mr-2" />
-              <span className="text-sm">Reply thread</span>
-            </DropdownMenuItem>
-            {canEdit && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleEdit}>
-                  <Pencil className="size-4 mr-2" />
-                  <span className="text-sm">Edit message</span>
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            className="w-40 p-1"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            <div className="flex flex-col">
+              <Button
+                variant="ghost"
+                className="justify-start h-9 px-2 w-full"
+                onClick={handleThread}
+              >
+                <MessageSquareText className="size-4 mr-2" />
+                <span className="text-sm">Reply thread</span>
+              </Button>
+              {canEdit && (
+                <>
+                  <div className="h-px bg-border my-1" />
+                  <Button
+                    variant="ghost"
+                    className="justify-start h-9 px-2 w-full"
+                    onClick={handleEdit}
+                  >
+                    <Pencil className="size-4 mr-2" />
+                    <span className="text-sm">Edit message</span>
+                  </Button>
+                </>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </>
   );

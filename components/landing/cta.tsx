@@ -90,7 +90,7 @@ export default function CTASection() {
                 size="lg"
                 className="h-12 min-w-40 border-border bg-background px-8 text-base hover:bg-muted/50"
               >
-                <Link href="/contact">Contact Sales</Link>
+                <Link href="/">Contact</Link>
               </Button>
             </div>
 

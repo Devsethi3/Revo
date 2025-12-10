@@ -16,6 +16,7 @@ interface EmptyStateProps {
   buttonText: string;
   href: string;
 }
+
 const EmptyState = ({
   title,
   description,
