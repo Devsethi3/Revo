@@ -12,6 +12,11 @@ export const updateMessageSchema = z.object({
   content: z.string(),
 });
 
+// Add delete schema
+export const deleteMessageSchema = z.object({
+  messageId: z.string(),
+});
+
 export const toggleReactionSchema = z.object({
   messageId: z.string(),
   emoji: z.string().min(1),
@@ -25,4 +30,5 @@ export const groupReactionSchema = z.object({
 
 export type CreateMessageSchemaType = z.infer<typeof createMessageSchema>;
 export type UpdateMessageSchemaType = z.infer<typeof updateMessageSchema>;
+export type DeleteMessageSchemaType = z.infer<typeof deleteMessageSchema>;
 export type GroupReactionSchemaType = z.infer<typeof groupReactionSchema>;

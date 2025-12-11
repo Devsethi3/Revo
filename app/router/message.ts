@@ -1,4 +1,6 @@
-import z, { emoji } from "zod";
+// router/message.ts
+
+import z from "zod";
 import { standardSecurityMiddleware } from "../middleware/arcjet/standard";
 import { writeSecurityMiddleware } from "../middleware/arcjet/write";
 import { requiredAuthMiddleware } from "../middleware/auth";
@@ -7,6 +9,7 @@ import { requiredWorkspaceMiddleware } from "../middleware/workspace";
 import prisma from "@/lib/db";
 import {
   createMessageSchema,
+  deleteMessageSchema,
   groupReactionSchema,
   GroupReactionSchemaType,
   toggleReactionSchema,
@@ -459,5 +462,66 @@ export const toggleMessageReaction = base
         })),
         context.user.id
       ),
+    };
+  });
+
+export const deleteMessage = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
+  .use(standardSecurityMiddleware)
+  .use(writeSecurityMiddleware)
+  .route({
+    method: "DELETE",
+    path: "/messages/:messageId",
+    summary: "Delete a message",
+    tags: ["Messages"],
+  })
+  .input(deleteMessageSchema)
+  .output(
+    z.object({
+      success: z.boolean(),
+      messageId: z.string(),
+      channelId: z.string(),
+      threadId: z.string().nullable(),
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    // Find the message and verify ownership
+    const message = await prisma.message.findFirst({
+      where: {
+        id: input.messageId,
+        channel: {
+          workspaceId: context.workspace.orgCode,
+        },
+      },
+      select: {
+        id: true,
+        authorId: true,
+        channelId: true,
+        threadId: true,
+      },
+    });
+
+    if (!message) {
+      throw errors.NOT_FOUND();
+    }
+
+    // Only the author can delete their message
+    if (message.authorId !== context.user.id) {
+      throw errors.FORBIDDEN();
+    }
+
+    // Delete the message (cascade handles replies and reactions via Prisma schema)
+    await prisma.message.delete({
+      where: {
+        id: input.messageId,
+      },
+    });
+
+    return {
+      success: true,
+      messageId: input.messageId,
+      channelId: message.channelId!,
+      threadId: message.threadId,
     };
   });

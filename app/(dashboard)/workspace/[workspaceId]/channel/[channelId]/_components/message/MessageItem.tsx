@@ -1,5 +1,4 @@
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
-import { Message } from "@/lib/generated/prisma/client";
 import { getAvatar } from "@/lib/get-avatar";
 import Image from "next/image";
 import { MessageHoverToolbar } from "../toolbar";
@@ -11,6 +10,7 @@ import { useThread } from "@/providers/ThreadProvider";
 import { orpc } from "@/lib/orpc";
 import { useQueryClient } from "@tanstack/react-query";
 import ReactionBar from "../reaction/ReactionBar";
+import { useDeleteMessage } from "@/hooks/use-delete-message";
 
 interface MessageItemProps {
   message: MessageListItem;
@@ -22,6 +22,12 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { openThread } = useThread();
   const queryClient = useQueryClient();
+
+  // Initialize delete hook with proper context
+  const { deleteMessage } = useDeleteMessage({
+    channelId: message.channelId!,
+    threadId: message.threadId,
+  });
 
   const prefetchThread = useCallback(() => {
     const options = orpc.message.thread.list.queryOptions({
@@ -40,6 +46,13 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
       setShowMobileMenu((prev) => !prev);
     }
   };
+
+  const handleDelete = useCallback(
+    async (messageId: string) => {
+      await deleteMessage(messageId);
+    },
+    [deleteMessage]
+  );
 
   return (
     <>
@@ -137,7 +150,7 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
           )}
         </div>
 
-        {/* Toolbar */}
+        {/* Toolbar - now with onDelete handler */}
         <MessageHoverToolbar
           messageId={message.id}
           canEdit={message.authorId === currentUserId}
@@ -145,6 +158,7 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
             setIsEditing(true);
             setShowMobileMenu(false);
           }}
+          onDelete={handleDelete}
           showMobile={showMobileMenu}
           onClose={() => setShowMobileMenu(false)}
         />

@@ -1,3 +1,4 @@
+// providers/ThreadRealtimeProvider.tsx
 import {
   RealtimeMessageType,
   ThreadEventSchema,

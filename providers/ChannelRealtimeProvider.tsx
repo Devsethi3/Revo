@@ -1,3 +1,5 @@
+// /providers/ChannelRealtimeProvider.tsx
+
 import {
   ChannelEventSchema,
   ChannelEventType,
