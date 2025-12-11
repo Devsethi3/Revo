@@ -1,5 +1,3 @@
-// /providers/ChannelRealtimeProvider.tsx
-
 import {
   ChannelEventSchema,
   ChannelEventType,
@@ -40,15 +38,15 @@ export function ChannelRealtimeProvider({
         const result = ChannelEventSchema.safeParse(parsed);
 
         if (!result.success) {
-          console.warn("Invalid channel event");
+          console.warn("Invalid channel event", result.error);
           return;
         }
 
         const event = result.data;
+
         if (event.type === "message:created") {
           const raw = event.payload.message;
 
-          // Insert at top of first page of infinite list for the channel
           queryClient.setQueryData<InfiniteMessages>(
             ["message.list", channelId],
             (old) => {
@@ -65,7 +63,6 @@ export function ChannelRealtimeProvider({
               }
 
               const first = old.pages[0];
-
               const updatedFirst: MessageListPage = {
                 ...first,
                 items: [raw, ...first.items],
@@ -77,12 +74,12 @@ export function ChannelRealtimeProvider({
               };
             }
           );
+          return;
         }
 
         if (event.type === "message:updated") {
           const updated = event.payload.message;
 
-          // Replace the message in the infinite list by id
           queryClient.setQueryData<InfiniteMessages>(
             ["message.list", channelId],
             (old) => {
@@ -101,12 +98,81 @@ export function ChannelRealtimeProvider({
           return;
         }
 
+        // Handle message deletion
+        if (event.type === "message:deleted") {
+          const { messageId, threadId, hasReplies } = event.payload;
+
+          // Remove message from channel list
+          queryClient.setQueryData<InfiniteMessages>(
+            ["message.list", channelId],
+            (old) => {
+              if (!old) return old;
+
+              const pages = old.pages.map((p) => ({
+                ...p,
+                items: p.items.filter((m) => m.id !== messageId),
+              }));
+
+              return { ...old, pages };
+            }
+          );
+
+          // If this was a thread reply, decrement parent's reply count
+          if (threadId) {
+            queryClient.setQueryData<InfiniteMessages>(
+              ["message.list", channelId],
+              (old) => {
+                if (!old) return old;
+
+                const pages = old.pages.map((p) => ({
+                  ...p,
+                  items: p.items.map((m) =>
+                    m.id === threadId
+                      ? {
+                          ...m,
+                          replyCount: Math.max(0, (m.replyCount ?? 0) - 1),
+                        }
+                      : m
+                  ),
+                }));
+
+                return { ...old, pages };
+              }
+            );
+
+            // Also update thread cache if it exists
+            type ThreadData = {
+              parent: RealtimeMessageType;
+              messages: RealtimeMessageType[];
+            };
+
+            queryClient.setQueryData<ThreadData>(
+              ["message.thread.list", threadId],
+              (old) => {
+                if (!old) return old;
+                return {
+                  ...old,
+                  messages: old.messages.filter((m) => m.id !== messageId),
+                };
+              }
+            );
+          }
+
+          // If deleted message had replies, remove its thread cache
+          if (hasReplies) {
+            queryClient.removeQueries({
+              queryKey: ["message.thread.list", messageId],
+            });
+          }
+
+          return;
+        }
+
         if (event.type === "reaction:updated") {
           const { messageId, reactions } = event.payload;
 
           queryClient.setQueryData<InfiniteMessages>(
             ["message.list", channelId],
-
             (old) => {
               if (!old) return old;
 
@@ -128,7 +194,6 @@ export function ChannelRealtimeProvider({
 
           queryClient.setQueryData<InfiniteMessages>(
             ["message.list", channelId],
-
             (old) => {
               if (!old) return old;
 
@@ -152,7 +217,7 @@ export function ChannelRealtimeProvider({
           return;
         }
       } catch (error) {
-        console.log("Channel Provider Error", error);
+        console.error("Channel Provider Error", error);
       }
     },
   });

@@ -123,7 +123,7 @@ export default function HeroSection() {
               className="mt-10 flex items-center justify-center gap-4"
             >
               <Button asChild size="lg">
-                <Link href="#get-started">
+                <Link href="/workspace">
                   Start for free <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

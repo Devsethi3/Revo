@@ -1,4 +1,3 @@
-// schemas/realtime.ts
 import z from "zod";
 import { groupReactionSchema } from "./message";
 
@@ -47,8 +46,7 @@ export const RealtimeMessageSchema = z.object({
 
 export type RealtimeMessageType = z.infer<typeof RealtimeMessageSchema>;
 
-// Channel Events
-
+// Channel Events - Added message:deleted event
 export const ChannelEventSchema = z.union([
   z.object({
     type: z.literal("message:created"),
@@ -59,13 +57,21 @@ export const ChannelEventSchema = z.union([
     payload: z.object({ message: RealtimeMessageSchema }),
   }),
   z.object({
+    type: z.literal("message:deleted"),
+    payload: z.object({
+      messageId: z.string(),
+      channelId: z.string(),
+      threadId: z.string().nullable(),
+      hasReplies: z.boolean().optional(),
+    }),
+  }),
+  z.object({
     type: z.literal("reaction:updated"),
     payload: z.object({
       messageId: z.string(),
       reactions: z.array(groupReactionSchema),
     }),
   }),
-
   z.object({
     type: z.literal("message:replies:increment"),
     payload: z.object({ messageId: z.string(), delta: z.number() }),
@@ -74,12 +80,18 @@ export const ChannelEventSchema = z.union([
 
 export type ChannelEventType = z.infer<typeof ChannelEventSchema>;
 
-// Thread Events
-
+// Thread Events - Added thread:reply:deleted event
 export const ThreadEventSchema = z.union([
   z.object({
     type: z.literal("thread:reply:created"),
     payload: z.object({ reply: RealtimeMessageSchema }),
+  }),
+  z.object({
+    type: z.literal("thread:reply:deleted"),
+    payload: z.object({
+      messageId: z.string(),
+      threadId: z.string(),
+    }),
   }),
   z.object({
     type: z.literal("thread:reaction:updated"),

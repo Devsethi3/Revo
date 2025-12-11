@@ -26,6 +26,7 @@ export function useDeleteMessage({
   threadId,
 }: UseDeleteMessageOptions) {
   const queryClient = useQueryClient();
+  const { send } = useChannelRealtime();
 
   const deleteMutation = useMutation(
     orpc.message.delete.mutationOptions({
@@ -54,6 +55,11 @@ export function useDeleteMessage({
               threadId,
             ])
           : undefined;
+
+        // Find the message being deleted to check if it has replies
+        const deletingMessage = previousMessages?.pages
+          .flatMap((p) => p.items)
+          .find((m) => m.id === variables.messageId);
 
         // Optimistically remove from channel message list
         queryClient.setQueryData<InfiniteMessages>(
@@ -107,19 +113,21 @@ export function useDeleteMessage({
 
         // If deleting a parent message (that has replies),
         // we should also invalidate/remove the thread cache
-        const deletingMessage = previousMessages?.pages
-          .flatMap((p) => p.items)
-          .find((m) => m.id === variables.messageId);
-
         if (deletingMessage && deletingMessage.replyCount > 0) {
           queryClient.removeQueries({
             queryKey: ["message.thread.list", variables.messageId],
           });
         }
 
-        return { previousMessages, previousThread };
+        return {
+          previousMessages,
+          previousThread,
+          hasReplies: deletingMessage?.replyCount
+            ? deletingMessage.replyCount > 0
+            : false,
+        };
       },
-      onError: (err, variables, context) => {
+      onError: (err, _variables, context) => {
         // Rollback to the previous state on error
         if (context?.previousMessages) {
           queryClient.setQueryData(
@@ -137,12 +145,19 @@ export function useDeleteMessage({
 
         toast.error(err.message || "Failed to delete message");
       },
-      onSuccess: (data) => {
+      onSuccess: (data, _variables, context) => {
         toast.success("Message deleted");
-      },
-      onSettled: () => {
-        // Optionally refetch to ensure consistency
-        // queryClient.invalidateQueries({ queryKey: ["message.list", channelId] });
+
+        // Broadcast deletion to other users via realtime
+        send({
+          type: "message:deleted",
+          payload: {
+            messageId: data.messageId,
+            channelId: data.channelId,
+            threadId: data.threadId,
+            hasReplies: context?.hasReplies ?? false,
+          },
+        });
       },
     })
   );
