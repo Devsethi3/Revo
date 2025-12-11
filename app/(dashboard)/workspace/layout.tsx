@@ -1,4 +1,4 @@
-// (dashboard)/workspace/layout.tsx
+// /workspace/layout.tsx
 
 import { ReactNode } from "react";
 import WorkspaceList from "./_components/WorkspaceList";
@@ -37,5 +37,3 @@ const WorkspaceLayout = async ({ children }: { children: ReactNode }) => {
 };
 
 export default WorkspaceLayout;
-
-// I did not see this Workspace Sidebar which is hidden in mobile i want to add show this workspace sidebar in the channel sidebar for small screen devices 

@@ -1,3 +1,4 @@
+// ChannelHeader.tsx
 "use client";
 
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -5,11 +6,11 @@ import InviteMember from "./member/InviteMember";
 import MembersOverview from "./member/MembersOverview";
 import {
   Hash,
-  Menu,
   PanelLeftClose,
   PanelLeft,
   UserPlus,
   PanelRight,
+  SearchIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,12 +19,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useSidebar } from "@/providers/SidebarProvider";
+import { useSearch } from "@/providers/SearchProvider";
+import { useParams } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useEffect } from "react";
 
 interface ChannelHeaderProps {
   channelName: string | undefined;
@@ -31,6 +35,21 @@ interface ChannelHeaderProps {
 
 const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
   const { isOpen, toggle } = useSidebar();
+  const { openSearch } = useSearch();
+  const { channelId } = useParams<{ channelId: string }>();
+
+  // Keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        openSearch(channelId);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [openSearch, channelId]);
 
   return (
     <div className="flex items-center justify-between h-12 sm:h-14 px-2 sm:px-3 md:px-4 border-b shrink-0 bg-background">
@@ -46,9 +65,7 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
                 onClick={toggle}
                 className="size-9 shrink-0"
               >
-                {/* Mobile: Always show menu icon */}
                 <PanelRight className="size-4 sm:size-5 md:hidden" />
-                {/* Desktop: Show toggle icons based on state */}
                 {isOpen ? (
                   <PanelLeftClose className="size-4 sm:size-5 hidden md:block" />
                 ) : (
@@ -74,6 +91,31 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
 
       {/* Right Section - Actions */}
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+        {/* Search Button */}
+        <TooltipProvider delayDuration={700}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => openSearch(channelId)}
+                className="size-9"
+              >
+                <SearchIcon className="size-4" />
+                <span className="sr-only">Search messages</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <span className="flex items-center gap-2">
+                Search
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+                  ⌘K
+                </kbd>
+              </span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         {/* Desktop: Show buttons inline */}
         <div className="hidden sm:flex items-center gap-2 md:gap-3">
           <MembersOverview />

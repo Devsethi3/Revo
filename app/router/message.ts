@@ -525,3 +525,125 @@ export const deleteMessage = base
       threadId: message.threadId,
     };
   });
+
+  // router/message.ts - Add this endpoint
+
+export const searchMessages = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
+  .use(standardSecurityMiddleware)
+  .use(readSecurityMiddleware)
+  .route({
+    method: "GET",
+    path: "/messages/search",
+    summary: "Search messages in workspace",
+    tags: ["Messages"],
+  })
+  .input(
+    z.object({
+      query: z.string().min(1).max(100),
+      channelId: z.string().optional(),
+      limit: z.number().min(1).max(50).optional(),
+      cursor: z.string().optional(),
+    })
+  )
+  .output(
+    z.object({
+      items: z.array(
+        z.custom<
+          MessageListItem & {
+            channelName: string;
+            matchHighlight?: string;
+          }
+        >()
+      ),
+      nextCursor: z.string().optional(),
+      totalCount: z.number(),
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const limit = input.limit ?? 20;
+    const searchQuery = input.query.trim();
+
+    // Build where clause
+    const whereClause: any = {
+      channel: {
+        workspaceId: context.workspace.orgCode,
+      },
+      content: {
+        contains: searchQuery,
+        mode: "insensitive",
+      },
+    };
+
+    // Optional: filter by specific channel
+    if (input.channelId) {
+      whereClause.channelId = input.channelId;
+    }
+
+    // Get total count for the search
+    const totalCount = await prisma.message.count({
+      where: whereClause,
+    });
+
+    // Fetch messages with pagination
+    const messages = await prisma.message.findMany({
+      where: whereClause,
+      ...(input.cursor
+        ? {
+            cursor: { id: input.cursor },
+            skip: 1,
+          }
+        : {}),
+      take: limit,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      include: {
+        channel: {
+          select: {
+            name: true,
+          },
+        },
+        _count: {
+          select: { replies: true },
+        },
+        MessageReaction: {
+          select: {
+            emoji: true,
+            userId: true,
+          },
+        },
+      },
+    });
+
+    const items = messages.map((msg) => ({
+      id: msg.id,
+      content: msg.content,
+      imageUrl: msg.imageUrl,
+      channelId: msg.channelId,
+      authorId: msg.authorId,
+      updatedAt: msg.updatedAt,
+      createdAt: msg.createdAt,
+      authorEmail: msg.authorEmail,
+      authorAvatar: msg.authorAvatar,
+      authorName: msg.authorName,
+      threadId: msg.threadId,
+      replyCount: msg._count.replies,
+      channelName: msg.channel?.name ?? "Unknown",
+      reactions: groupReactions(
+        msg.MessageReaction.map((r) => ({
+          emoji: r.emoji,
+          userId: r.userId,
+        })),
+        context.user.id
+      ),
+    }));
+
+    const nextCursor =
+      messages.length === limit ? messages[messages.length - 1].id : undefined;
+
+    return {
+      items,
+      nextCursor,
+      totalCount,
+    };
+  });

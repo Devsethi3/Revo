@@ -12,6 +12,13 @@ export const updateMessageSchema = z.object({
   content: z.string(),
 });
 
+export const searchMessagesSchema = z.object({
+  query: z.string().min(1).max(100),
+  channelId: z.string().optional(),
+  limit: z.number().min(1).max(50).optional(),
+  cursor: z.string().optional(),
+});
+
 // Add delete schema
 export const deleteMessageSchema = z.object({
   messageId: z.string(),

@@ -1,3 +1,5 @@
+// router/index.ts
+
 import { generateCompose, generateThreadSummary } from "./ai";
 import { createChannel, getChannel, listChannels } from "./channel";
 import { inviteMember, listMembers } from "./member";
@@ -6,6 +8,7 @@ import {
   deleteMessage,
   listMessages,
   listThreadReplies,
+  searchMessages,
   toggleMessageReaction,
   updateMessage,
 } from "./message";
@@ -32,6 +35,7 @@ export const router = {
     list: listMessages,
     update: updateMessage,
     delete: deleteMessage, 
+    search: searchMessages,
     reaction: {
       toggle: toggleMessageReaction,
     },
