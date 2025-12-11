@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowRight, CheckIcon, Sparkles } from "lucide-react";
+import { ArrowRight, BadgeCheckIcon, CheckIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -95,8 +95,8 @@ export default function CTASection() {
             </div>
 
             <div className="flex items-center justify-center gap-3 pt-6">
-              <CheckIcon className="h-4 w-4 text-primary" />
-              <span>No credit card required</span>  
+              <BadgeCheckIcon className="size-4 text-primary" />
+              <span className="text-sm">No credit card required</span>  
             </div>
           </div>
         </motion.div>

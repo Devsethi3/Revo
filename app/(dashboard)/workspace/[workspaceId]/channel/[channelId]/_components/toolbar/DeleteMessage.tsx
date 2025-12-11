@@ -60,7 +60,7 @@ export function DeleteMessage({
           <Button
             variant="ghost"
             size="icon"
-            className="size-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            className="size-8 border-t text-muted-foreground hover:text-destructive hover:bg-destructive/10"
             onClick={(e) => e.stopPropagation()}
           >
             <Trash2Icon className="size-4" />
