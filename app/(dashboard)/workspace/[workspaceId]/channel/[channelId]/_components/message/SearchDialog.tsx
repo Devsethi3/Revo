@@ -28,6 +28,7 @@ import Image from "next/image";
 import { getAvatar } from "@/lib/get-avatar";
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { useRouter, useParams } from "next/navigation";
+import { useThread } from "@/providers/ThreadProvider";
 
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_LIMIT = 20;
@@ -47,17 +48,23 @@ interface SearchResultItemProps {
     replyCount: number;
   };
   query: string;
-  onNavigate: (channelId: string, threadId?: string | null) => void;
+  onNavigate: (
+    messageId: string,
+    channelId: string,
+    threadId?: string | null
+  ) => void;
+  isCurrentChannel: boolean;
 }
 
 const SearchResultItem = ({
   result,
   query,
   onNavigate,
+  isCurrentChannel,
 }: SearchResultItemProps) => {
   const handleClick = useCallback(() => {
     if (result.channelId) {
-      onNavigate(result.channelId, result.threadId);
+      onNavigate(result.id, result.channelId, result.threadId);
     }
   }, [result, onNavigate]);
 
@@ -102,6 +109,11 @@ const SearchResultItem = ({
               <span className="truncate max-w-[120px]">
                 {result.channelName}
               </span>
+              {isCurrentChannel && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded">
+                  current
+                </span>
+              )}
             </span>
             <span className="text-muted-foreground text-xs ml-auto shrink-0">
               {new Intl.DateTimeFormat("en-GB", {
@@ -174,10 +186,12 @@ export function SearchDialog() {
     searchQuery,
     setSearchQuery,
     clearSearch,
+    setNavigationTarget,
   } = useSearch();
 
   const router = useRouter();
-  const params = useParams<{ workspaceId: string }>();
+  const params = useParams<{ workspaceId: string; channelId: string }>();
+  const { openThread } = useThread();
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [searchInChannel, setSearchInChannel] = useState(true);
@@ -261,27 +275,48 @@ export function SearchDialog() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, closeSearch]);
 
-  // Navigate to message - handles thread opening via URL or custom event
+  // Navigate to message with highlight support
   const handleNavigate = useCallback(
-    (channelId: string, threadId?: string | null) => {
-      // Navigate to the channel
-      router.push(`/workspace/${params.workspaceId}/channel/${channelId}`);
+    (messageId: string, channelId: string, threadId?: string | null) => {
+      const isCurrentChannel = channelId === params.channelId;
 
-      // If it's a thread reply, dispatch a custom event to open the thread
-      // This will be caught by the ThreadProvider after navigation
+      // Set navigation target for highlighting
+      setNavigationTarget({
+        messageId,
+        channelId,
+        threadId,
+      });
+
+      // If it's a thread reply, open the thread
       if (threadId) {
-        // Store thread ID to open after navigation
-        sessionStorage.setItem("pendingThreadId", threadId);
+        if (!isCurrentChannel) {
+          router.push(`/workspace/${params.workspaceId}/channel/${channelId}`);
+          // Store thread ID to open after navigation
+          sessionStorage.setItem("pendingThreadId", threadId);
+          sessionStorage.setItem("pendingMessageId", messageId);
+        } else {
+          openThread(threadId);
+        }
+      } else if (!isCurrentChannel) {
+        // Navigate to the channel
+        router.push(`/workspace/${params.workspaceId}/channel/${channelId}`);
       }
 
       closeSearch();
     },
-    [router, params.workspaceId, closeSearch]
+    [
+      router,
+      params.workspaceId,
+      params.channelId,
+      closeSearch,
+      setNavigationTarget,
+      openThread,
+    ]
   );
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeSearch()}>
-      <DialogContent className="sm:max-w-[600px] p-0 pt-10 gap-0 max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-[600px] p-0 gap-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 pb-0">
           <DialogTitle className="sr-only">Search Messages</DialogTitle>
 
@@ -365,6 +400,7 @@ export function SearchDialog() {
                       result={result}
                       query={debouncedQuery}
                       onNavigate={handleNavigate}
+                      isCurrentChannel={result.channelId === params.channelId}
                     />
                   ))}
 

@@ -1,8 +1,9 @@
+// MessageItem.tsx
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { getAvatar } from "@/lib/get-avatar";
 import Image from "next/image";
 import { MessageHoverToolbar } from "../toolbar";
-import { useCallback, useState } from "react";
+import { forwardRef, useCallback, useState } from "react";
 import EditMessage from "../toolbar/EditMessage";
 import { MessageListItem } from "@/lib/types";
 import { MessageSquareIcon } from "lucide-react";
@@ -11,54 +12,67 @@ import { orpc } from "@/lib/orpc";
 import { useQueryClient } from "@tanstack/react-query";
 import ReactionBar from "../reaction/ReactionBar";
 import { useDeleteMessage } from "@/hooks/use-delete-message";
+import { cn } from "@/lib/utils";
 
 interface MessageItemProps {
   message: MessageListItem;
   currentUserId: string;
+  isHighlighted?: boolean;
 }
 
-const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { openThread } = useThread();
-  const queryClient = useQueryClient();
+const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
+  ({ message, currentUserId, isHighlighted = false }, ref) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const { openThread } = useThread();
+    const queryClient = useQueryClient();
 
-  // Initialize delete hook with proper context
-  const { deleteMessage } = useDeleteMessage({
-    channelId: message.channelId!,
-    threadId: message.threadId,
-  });
-
-  const prefetchThread = useCallback(() => {
-    const options = orpc.message.thread.list.queryOptions({
-      input: {
-        messageId: message.id,
-      },
+    // Initialize delete hook with proper context
+    const { deleteMessage } = useDeleteMessage({
+      channelId: message.channelId!,
+      threadId: message.threadId,
     });
-    queryClient
-      .prefetchQuery({ ...options, staleTime: 60_000 })
-      .catch(() => {});
-  }, [message.id, queryClient]);
 
-  const handleMessageTap = () => {
-    // Only toggle on mobile/touch devices
-    if (window.matchMedia("(max-width: 768px)").matches) {
-      setShowMobileMenu((prev) => !prev);
-    }
-  };
+    const prefetchThread = useCallback(() => {
+      const options = orpc.message.thread.list.queryOptions({
+        input: {
+          messageId: message.id,
+        },
+      });
+      queryClient
+        .prefetchQuery({ ...options, staleTime: 60_000 })
+        .catch(() => {});
+    }, [message.id, queryClient]);
 
-  const handleDelete = useCallback(
-    async (messageId: string) => {
-      await deleteMessage(messageId);
-    },
-    [deleteMessage]
-  );
+    const handleMessageTap = () => {
+      // Only toggle on mobile/touch devices
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        setShowMobileMenu((prev) => !prev);
+      }
+    };
 
-  return (
-    <>
+    const handleDelete = useCallback(
+      async (messageId: string) => {
+        await deleteMessage(messageId);
+      },
+      [deleteMessage]
+    );
+
+    return (
       <div
-        className="flex gap-2 sm:gap-3 relative p-2 sm:p-2.5 rounded-lg group hover:bg-muted/50 transition-colors"
+        ref={ref}
+        className={cn(
+          "flex gap-2 sm:gap-3 relative p-2 sm:p-2.5 rounded-lg group transition-all duration-300",
+          "hover:bg-muted/50",
+          // Highlight styles
+          isHighlighted && [
+            "bg-primary/10 dark:bg-primary/15",
+            "ring-2 ring-primary/50",
+            "animate-highlight-pulse",
+          ]
+        )}
         onClick={handleMessageTap}
+        data-message-id={message.id}
       >
         {/* Avatar */}
         <Image
@@ -163,8 +177,10 @@ const MessageItem = ({ message, currentUserId }: MessageItemProps) => {
           onClose={() => setShowMobileMenu(false)}
         />
       </div>
-    </>
-  );
-};
+    );
+  }
+);
+
+MessageItem.displayName = "MessageItem";
 
 export default MessageItem;

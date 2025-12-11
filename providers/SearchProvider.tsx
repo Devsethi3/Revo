@@ -10,6 +10,12 @@ import {
   ReactNode,
 } from "react";
 
+interface SearchNavigationTarget {
+  messageId: string;
+  channelId: string;
+  threadId?: string | null;
+}
+
 interface SearchContextType {
   isOpen: boolean;
   openSearch: (channelId?: string) => void;
@@ -19,6 +25,10 @@ interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearSearch: () => void;
+  // New: Navigation target for highlighting
+  navigationTarget: SearchNavigationTarget | null;
+  setNavigationTarget: (target: SearchNavigationTarget | null) => void;
+  clearNavigationTarget: () => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -33,6 +43,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
     undefined
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [navigationTarget, setNavigationTarget] = useState<SearchNavigationTarget | null>(null);
 
   const openSearch = useCallback((channelId?: string) => {
     setCurrentChannelId(channelId);
@@ -41,14 +52,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
 
   const closeSearch = useCallback(() => {
     setIsOpen(false);
-    // Keep the query for a moment in case user reopens
-    setTimeout(() => {
-      if (!isOpen) {
-        setSearchQuery("");
-        setCurrentChannelId(undefined);
-      }
-    }, 300);
-  }, [isOpen]);
+  }, []);
 
   const toggleSearch = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -56,6 +60,10 @@ export function SearchProvider({ children }: SearchProviderProps) {
 
   const clearSearch = useCallback(() => {
     setSearchQuery("");
+  }, []);
+
+  const clearNavigationTarget = useCallback(() => {
+    setNavigationTarget(null);
   }, []);
 
   const value = useMemo(
@@ -68,6 +76,9 @@ export function SearchProvider({ children }: SearchProviderProps) {
       searchQuery,
       setSearchQuery,
       clearSearch,
+      navigationTarget,
+      setNavigationTarget,
+      clearNavigationTarget,
     }),
     [
       isOpen,
@@ -77,6 +88,8 @@ export function SearchProvider({ children }: SearchProviderProps) {
       currentChannelId,
       searchQuery,
       clearSearch,
+      navigationTarget,
+      clearNavigationTarget,
     ]
   );
 

@@ -1,3 +1,4 @@
+// MessageList.tsx
 "use client";
 
 import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
@@ -11,11 +12,14 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import MessageSkeleton from "./MessageSkeleton";
 import { cn } from "@/lib/utils";
 import { MessageListItem } from "@/lib/types";
+import { useSearch } from "@/providers/SearchProvider";
 
 // Constants
 const SCROLL_THRESHOLD = 80;
 const MESSAGES_PER_PAGE = 10;
 const STALE_TIME = 30_000;
+const HIGHLIGHT_DURATION = 3000; // 3 seconds
+const MAX_FETCH_ATTEMPTS = 10; // Maximum pages to fetch when searching for a message
 
 // Date Utilities
 const getDateKey = (date: Date): string => {
@@ -40,24 +44,20 @@ const formatDateSeparator = (date: Date): string => {
   const diffTime = today.getTime() - messageDate.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  // Today
   if (messageDate.getTime() === today.getTime()) {
     return "Today";
   }
 
-  // Yesterday
   if (messageDate.getTime() === yesterday.getTime()) {
     return "Yesterday";
   }
 
-  // Within the last 7 days - show day name (e.g., "Monday")
   if (diffDays < 7 && diffDays > 0) {
     return date.toLocaleDateString("en-US", {
       weekday: "long",
     });
   }
 
-  // Same year - show "December 15"
   if (date.getFullYear() === now.getFullYear()) {
     return date.toLocaleDateString("en-US", {
       month: "long",
@@ -65,7 +65,6 @@ const formatDateSeparator = (date: Date): string => {
     });
   }
 
-  // Different year - show "December 15, 2023"
   return date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -73,26 +72,19 @@ const formatDateSeparator = (date: Date): string => {
   });
 };
 
-// ============================================
 // Types
-// ============================================
 type GroupedItem =
   | { type: "separator"; dateKey: string; label: string }
   | { type: "message"; message: MessageListItem };
 
-// ============================================
 // Date Separator Component
-// ============================================
 const DateSeparator = memo(({ label }: { label: string }) => (
   <div
     className="relative flex items-center justify-center py-3 sm:py-4 md:py-5"
     role="separator"
     aria-label={`Messages from ${label}`}
   >
-    {/* Background line */}
     <div className="absolute inset-x-0 top-1/2 h-px bg-border/60" />
-
-    {/* Date badge */}
     <span
       className={cn(
         "relative z-10",
@@ -112,9 +104,7 @@ const DateSeparator = memo(({ label }: { label: string }) => (
 ));
 DateSeparator.displayName = "DateSeparator";
 
-// ============================================
 // Loading Indicator Component
-// ============================================
 const LoadingIndicator = memo(({ isVisible }: { isVisible: boolean }) => (
   <div
     className={cn(
@@ -141,6 +131,34 @@ const LoadingIndicator = memo(({ isVisible }: { isVisible: boolean }) => (
   </div>
 ));
 LoadingIndicator.displayName = "LoadingIndicator";
+
+// Searching Message Indicator
+const SearchingMessageIndicator = memo(({ isVisible }: { isVisible: boolean }) => (
+  <div
+    className={cn(
+      "pointer-events-none absolute inset-0 z-30",
+      "flex items-center justify-center",
+      "bg-background/80 backdrop-blur-sm",
+      "transition-all duration-300 ease-out",
+      isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+    )}
+  >
+    <div
+      className={cn(
+        "flex flex-col items-center gap-3",
+        "rounded-xl",
+        "bg-background shadow-lg border",
+        "px-6 py-4"
+      )}
+    >
+      <Loader2 className="size-6 animate-spin text-primary" />
+      <span className="text-sm text-muted-foreground">
+        Finding message...
+      </span>
+    </div>
+  </div>
+));
+SearchingMessageIndicator.displayName = "SearchingMessageIndicator";
 
 // Scroll to Bottom Button
 const ScrollToBottomButton = memo(
@@ -178,12 +196,19 @@ ScrollToBottomButton.displayName = "ScrollToBottomButton";
 // Main Component
 const MessageList = () => {
   const { channelId } = useParams<{ channelId: string }>();
+  const { navigationTarget, clearNavigationTarget } = useSearch();
 
   const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [isAtBottom, setIsAtBottom] = useState(true);
   const lastItemIdRef = useRef<string | undefined>(undefined);
+  
+  // Highlight state
+  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
+  const [isSearchingMessage, setIsSearchingMessage] = useState(false);
+  const fetchAttemptsRef = useRef(0);
 
   // Query configuration
   const infiniteOptions = useMemo(
@@ -234,6 +259,86 @@ const MessageList = () => {
     [data]
   );
 
+  // Register message ref
+  const registerMessageRef = useCallback((id: string, el: HTMLDivElement | null) => {
+    if (el) {
+      messageRefs.current.set(id, el);
+    } else {
+      messageRefs.current.delete(id);
+    }
+  }, []);
+
+  // Scroll to specific message
+  const scrollToMessage = useCallback((messageId: string) => {
+    const messageEl = messageRefs.current.get(messageId);
+    if (messageEl && scrollRef.current) {
+      // Scroll to the message with some offset from top
+      const container = scrollRef.current;
+      const messageRect = messageEl.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      
+      const scrollTop = container.scrollTop + (messageRect.top - containerRect.top) - 100;
+      
+      container.scrollTo({
+        top: Math.max(0, scrollTop),
+        behavior: 'smooth'
+      });
+
+      // Highlight the message
+      setHighlightedMessageId(messageId);
+      
+      // Clear highlight after duration
+      setTimeout(() => {
+        setHighlightedMessageId(null);
+      }, HIGHLIGHT_DURATION);
+
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Handle navigation target (from search)
+  useEffect(() => {
+    if (!navigationTarget || navigationTarget.channelId !== channelId) {
+      return;
+    }
+
+    const targetMessageId = navigationTarget.messageId;
+
+    // Check if message is already loaded
+    const messageExists = items.some(item => item.id === targetMessageId);
+
+    if (messageExists) {
+      // Small delay to ensure DOM is ready
+      requestAnimationFrame(() => {
+        scrollToMessage(targetMessageId);
+        clearNavigationTarget();
+        setIsSearchingMessage(false);
+        fetchAttemptsRef.current = 0;
+      });
+    } else if (hasNextPage && !isFetching && fetchAttemptsRef.current < MAX_FETCH_ATTEMPTS) {
+      // Message not found, fetch more
+      setIsSearchingMessage(true);
+      fetchAttemptsRef.current += 1;
+      fetchNextPage();
+    } else if (!hasNextPage || fetchAttemptsRef.current >= MAX_FETCH_ATTEMPTS) {
+      // Message not found after all attempts or no more pages
+      console.warn('Message not found in channel');
+      clearNavigationTarget();
+      setIsSearchingMessage(false);
+      fetchAttemptsRef.current = 0;
+    }
+  }, [
+    navigationTarget,
+    channelId,
+    items,
+    hasNextPage,
+    isFetching,
+    fetchNextPage,
+    scrollToMessage,
+    clearNavigationTarget
+  ]);
+
   // Group messages with date separators
   const groupedItems = useMemo((): GroupedItem[] => {
     if (items.length === 0) return [];
@@ -245,7 +350,6 @@ const MessageList = () => {
       const messageDate = new Date(message.createdAt);
       const dateKey = getDateKey(messageDate);
 
-      // Insert separator when date changes
       if (dateKey !== currentDateKey) {
         result.push({
           type: "separator",
@@ -275,6 +379,12 @@ const MessageList = () => {
 
   // Initial scroll to bottom
   useEffect(() => {
+    // Don't auto-scroll if we have a navigation target
+    if (navigationTarget?.channelId === channelId) {
+      setHasInitialScrolled(true);
+      return;
+    }
+
     if (!hasInitialScrolled && data?.pages.length) {
       const el = scrollRef.current;
       if (el) {
@@ -285,7 +395,7 @@ const MessageList = () => {
         });
       }
     }
-  }, [hasInitialScrolled, data?.pages.length]);
+  }, [hasInitialScrolled, data?.pages.length, navigationTarget, channelId]);
 
   // Handle content changes (images, resize, mutations)
   useEffect(() => {
@@ -293,6 +403,9 @@ const MessageList = () => {
     if (!el) return;
 
     const scrollToBottomIfNeeded = () => {
+      // Don't auto-scroll if searching for a message
+      if (isSearchingMessage || highlightedMessageId) return;
+      
       if (isAtBottom || !hasInitialScrolled) {
         requestAnimationFrame(() => {
           bottomRef.current?.scrollIntoView({ block: "end" });
@@ -324,15 +437,15 @@ const MessageList = () => {
       el.removeEventListener("load", onImageLoad, true);
       mutationObserver.disconnect();
     };
-  }, [isAtBottom, hasInitialScrolled]);
+  }, [isAtBottom, hasInitialScrolled, isSearchingMessage, highlightedMessageId]);
 
   // Handle scroll for infinite loading
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    // Fetch more when scrolled near top
-    if (el.scrollTop <= SCROLL_THRESHOLD && hasNextPage && !isFetching) {
+    // Fetch more when scrolled near top (but not when searching for message)
+    if (el.scrollTop <= SCROLL_THRESHOLD && hasNextPage && !isFetching && !isSearchingMessage) {
       const prevScrollHeight = el.scrollHeight;
       const prevScrollTop = el.scrollTop;
 
@@ -345,11 +458,11 @@ const MessageList = () => {
     }
 
     setIsAtBottom(isNearBottom(el));
-  }, [hasNextPage, isFetching, fetchNextPage, isNearBottom]);
+  }, [hasNextPage, isFetching, fetchNextPage, isNearBottom, isSearchingMessage]);
 
   // Auto-scroll on new messages
   useEffect(() => {
-    if (!items.length) return;
+    if (!items.length || isSearchingMessage || highlightedMessageId) return;
 
     const lastId = items[items.length - 1].id;
     const prevLastId = lastItemIdRef.current;
@@ -363,7 +476,7 @@ const MessageList = () => {
     }
 
     lastItemIdRef.current = lastId;
-  }, [items, isNearBottom]);
+  }, [items, isNearBottom, isSearchingMessage, highlightedMessageId]);
 
   // Scroll to bottom handler
   const scrollToBottom = useCallback(() => {
@@ -405,6 +518,8 @@ const MessageList = () => {
                   key={item.message.id}
                   message={item.message}
                   currentUserId={user.id}
+                  isHighlighted={highlightedMessageId === item.message.id}
+                  ref={(el) => registerMessageRef(item.message.id, el)}
                 />
               )
             )}
@@ -416,12 +531,15 @@ const MessageList = () => {
       </div>
 
       {/* Loading indicator for older messages */}
-      <LoadingIndicator isVisible={isFetchingNextPage} />
+      <LoadingIndicator isVisible={isFetchingNextPage && !isSearchingMessage} />
+
+      {/* Searching message indicator */}
+      <SearchingMessageIndicator isVisible={isSearchingMessage} />
 
       {/* Scroll to bottom button */}
       <ScrollToBottomButton
         onClick={scrollToBottom}
-        isVisible={!isAtBottom && hasInitialScrolled}
+        isVisible={!isAtBottom && hasInitialScrolled && !isSearchingMessage}
       />
     </div>
   );
