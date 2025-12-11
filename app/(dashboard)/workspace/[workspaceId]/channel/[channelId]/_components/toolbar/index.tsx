@@ -1,3 +1,4 @@
+// components/MessageHoverToolbar.tsx
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -6,11 +7,13 @@ import {
 } from "@/components/ui/popover";
 import { useThread } from "@/providers/ThreadProvider";
 import { MessageSquareText, MoreVertical, Pencil } from "lucide-react";
+import { DeleteMessage } from "./DeleteMessage";
 
 interface MessageHoverToolbarProps {
   messageId: string;
   canEdit: boolean;
   onEdit: () => void;
+  onDelete: (messageId: string) => Promise<void>;
   showMobile?: boolean;
   onClose?: () => void;
 }
@@ -19,6 +22,7 @@ export function MessageHoverToolbar({
   messageId,
   canEdit,
   onEdit,
+  onDelete,
   showMobile = false,
   onClose,
 }: MessageHoverToolbarProps) {
@@ -60,6 +64,14 @@ export function MessageHoverToolbar({
           <MessageSquareText className="size-4" />
           <span className="sr-only">Reply in thread</span>
         </Button>
+        {canEdit && (
+          <DeleteMessage
+            messageId={messageId}
+            onDelete={onDelete}
+            onClose={onClose}
+            variant="icon"
+          />
+        )}
       </div>
 
       {/* Mobile: Popover Menu */}
@@ -81,7 +93,7 @@ export function MessageHoverToolbar({
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="w-40 p-1"
+            className="w-44 p-1"
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
             <div className="flex flex-col">
@@ -91,7 +103,7 @@ export function MessageHoverToolbar({
                 onClick={handleThread}
               >
                 <MessageSquareText className="size-4 mr-2" />
-                <span className="text-sm">Reply thread</span>
+                <span className="text-sm">Reply in thread</span>
               </Button>
               {canEdit && (
                 <>
@@ -104,6 +116,12 @@ export function MessageHoverToolbar({
                     <Pencil className="size-4 mr-2" />
                     <span className="text-sm">Edit message</span>
                   </Button>
+                  <DeleteMessage
+                    messageId={messageId}
+                    onDelete={onDelete}
+                    onClose={onClose}
+                    variant="full"
+                  />
                 </>
               )}
             </div>

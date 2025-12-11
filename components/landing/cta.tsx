@@ -79,7 +79,7 @@ export default function CTASection() {
                 size="lg"
                 className="group h-12 min-w-40 px-8 text-base"
               >
-                <Link href="/signup">
+                <Link href="/workspace">
                   Get Started
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>

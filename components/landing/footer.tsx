@@ -11,7 +11,7 @@ export default function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="flex flex-col items-center justify-center space-y-6">
-          <LogoIcon />
+          <LogoIcon size="xl" />
 
           {/* Tagline with gradient text */}
           <p className="text-center text-sm max-w-md bg-linear-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent font-medium">
