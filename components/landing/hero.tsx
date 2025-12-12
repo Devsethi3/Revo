@@ -71,7 +71,7 @@ export default function HeroSection() {
                   New
                 </AnnouncementTag>
                 <AnnouncementTitle className="text-muted-foreground">
-                  Revo 2.0 is now public
+                  Revo is now live
                   <ArrowUpRightIcon
                     className="ml-1 shrink-0 opacity-70"
                     size={14}
