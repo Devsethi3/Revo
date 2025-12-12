@@ -86,7 +86,7 @@ const ComposeAssistant = ({ content, onAccept }: ComposeAssistantProps) => {
             </span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-100 p-0" align="end">
+        <PopoverContent className="w-80 sm:w-96 md:w-[420px] p-0" align="end">
           <div className="flex items-center justify-between px-4 py-3 border-b">
             <div className="flex items-center gap-2">
               <span className="relative inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent to-bg-secondary border px-4 py-2 gap-1.5">
@@ -106,20 +106,22 @@ const ComposeAssistant = ({ content, onAccept }: ComposeAssistantProps) => {
             )}
           </div>
 
-          <div className="px-4 py-3 max-h-80 overflow-y-auto">
+          <div className="px-4 py-3 max-h-80 overflow-y-auto space-y-3">
             {error ? (
-              <div>
-                <p className="text-destructive">{error.message}</p>
+              <div className="space-y-2">
+                <p className="text-sm text-destructive">
+                  Something went wrong. Please try again.
+                </p>
                 <Button
                   type="button"
-                  size={"sm"}
+                  size="sm"
                   onClick={() => {
                     clearError();
                     setMessages([]);
-                    sendMessage({ text: "Summarize Thread" });
+                    sendMessage({ text: "Rewrite" });
                   }}
                 >
-                  Try Again
+                  Retry
                 </Button>
               </div>
             ) : composeText ? (
@@ -133,9 +135,9 @@ const ComposeAssistant = ({ content, onAccept }: ComposeAssistantProps) => {
                 <Skeleton className="h-4 w-5/6" />
               </div>
             ) : (
-              <div className="text-sm text-muted-foreground">
-                Click Compose to generate
-              </div>
+              <p className="text-sm text-muted-foreground">
+                Click Compose to generate suggestions.
+              </p>
             )}
           </div>
 
@@ -176,3 +178,5 @@ const ComposeAssistant = ({ content, onAccept }: ComposeAssistantProps) => {
 };
 
 export default ComposeAssistant;
+
+// make this component responsive with better error handling only show proper errors(not for debugging) for production

@@ -26,6 +26,8 @@ interface MenubarProps {
 }
 
 const Menubar = ({ editor }: MenubarProps) => {
+  // ---- FIXED SELECTOR ----
+  // Removed editor.getJSON() to prevent valueOf() crash
   const editorState = useEditorState({
     editor,
     selector: ({ editor }) => {
@@ -40,21 +42,19 @@ const Menubar = ({ editor }: MenubarProps) => {
         isOrderedList: editor.isActive("orderedList"),
         canUndo: editor.can().undo(),
         canRedo: editor.can().redo(),
-        currentContent: editor.getJSON(),
       };
     },
   });
 
-  if (!editor) {
-    return null;
-  }
+  if (!editor) return null;
 
+  // ---- Handle Compose AI Accept ----
   const handleAcceptCompose = (markdown: string) => {
     try {
       const json = markdownToJson(markdown);
       editor.commands.setContent(json);
     } catch {
-      console.log("Something went wrong");
+      console.log("Content update failed");
     }
   };
 
@@ -62,12 +62,13 @@ const Menubar = ({ editor }: MenubarProps) => {
     <>
       <div className="border border-input border-t-0 border-x-0 rounded-t-lg p-2 bg-card flex flex-wrap gap-1 items-center">
         <TooltipProvider>
+          {/* Inline Formatting */}
           <div className="flex flex-wrap gap-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Toggle
                   size="sm"
-                  pressed={editor.isActive("bold")}
+                  pressed={editorState?.isBold}
                   onPressedChange={() =>
                     editor.chain().focus().toggleBold().run()
                   }
@@ -85,7 +86,7 @@ const Menubar = ({ editor }: MenubarProps) => {
               <TooltipTrigger asChild>
                 <Toggle
                   size="sm"
-                  pressed={editor.isActive("italic")}
+                  pressed={editorState?.isItalic}
                   onPressedChange={() =>
                     editor.chain().focus().toggleItalic().run()
                   }
@@ -103,7 +104,7 @@ const Menubar = ({ editor }: MenubarProps) => {
               <TooltipTrigger asChild>
                 <Toggle
                   size="sm"
-                  pressed={editor.isActive("strike")}
+                  pressed={editorState?.isStrike}
                   onPressedChange={() =>
                     editor.chain().focus().toggleStrike().run()
                   }
@@ -121,7 +122,7 @@ const Menubar = ({ editor }: MenubarProps) => {
               <TooltipTrigger asChild>
                 <Toggle
                   size="sm"
-                  pressed={editor.isActive("codeBlock")}
+                  pressed={editorState?.isCodeBlock}
                   onPressedChange={() =>
                     editor.chain().focus().toggleCodeBlock().run()
                   }
@@ -136,14 +137,16 @@ const Menubar = ({ editor }: MenubarProps) => {
             </Tooltip>
           </div>
 
+          {/* Divider */}
           <div className="w-px h-6 bg-border mx-2"></div>
 
+          {/* Lists */}
           <div className="flex flex-wrap gap-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Toggle
                   size="sm"
-                  pressed={editor.isActive("bulletList")}
+                  pressed={editorState?.isBulletList}
                   onPressedChange={() =>
                     editor.chain().focus().toggleBulletList().run()
                   }
@@ -162,7 +165,7 @@ const Menubar = ({ editor }: MenubarProps) => {
               <TooltipTrigger asChild>
                 <Toggle
                   size="sm"
-                  pressed={editor.isActive("orderedList")}
+                  pressed={editorState?.isOrderedList}
                   onPressedChange={() =>
                     editor.chain().focus().toggleOrderedList().run()
                   }
@@ -178,8 +181,10 @@ const Menubar = ({ editor }: MenubarProps) => {
             </Tooltip>
           </div>
 
+          {/* Divider */}
           <div className="w-px h-6 bg-border mx-2"></div>
 
+          {/* Undo / Redo */}
           <div className="flex flex-wrap gap-1">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -187,7 +192,7 @@ const Menubar = ({ editor }: MenubarProps) => {
                   onClick={() => editor.chain().focus().undo().run()}
                   disabled={!editorState?.canUndo}
                   size="sm"
-                  variant={"ghost"}
+                  variant="ghost"
                   type="button"
                 >
                   <Undo />
@@ -200,9 +205,9 @@ const Menubar = ({ editor }: MenubarProps) => {
               <TooltipTrigger asChild>
                 <Button
                   onClick={() => editor.chain().focus().redo().run()}
-                  disabled={!editorState?.canUndo}
+                  disabled={!editorState?.canRedo}
                   size="sm"
-                  variant={"ghost"}
+                  variant="ghost"
                   type="button"
                 >
                   <Redo />
@@ -212,11 +217,13 @@ const Menubar = ({ editor }: MenubarProps) => {
             </Tooltip>
           </div>
 
+          {/* Divider */}
           <div className="w-px h-6 bg-border mx-2"></div>
 
+          {/* Compose Assistant */}
           <div className="flex flex-wrap gap-1">
             <ComposeAssistant
-              content={JSON.stringify(editorState?.currentContent)}
+              content={JSON.stringify(editor.getJSON())}
               onAccept={handleAcceptCompose}
             />
           </div>

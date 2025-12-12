@@ -40,6 +40,7 @@ export default function HeroSection() {
   return (
     <>
       <HeroHeader />
+
       <main className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
         {/* Modern Gradient Mesh Background (Variable based) */}
         <div
