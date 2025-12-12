@@ -1,4 +1,3 @@
-// CreateNewChannel.tsx
 "use client";
 
 import {

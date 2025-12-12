@@ -1,4 +1,3 @@
-// MessageList.tsx
 "use client";
 
 import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";

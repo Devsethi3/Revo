@@ -1,4 +1,3 @@
-// MessageItem.tsx
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { getAvatar } from "@/lib/get-avatar";
 import Image from "next/image";

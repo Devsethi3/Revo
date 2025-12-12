@@ -1,5 +1,3 @@
-// router/message.ts
-
 import z from "zod";
 import { standardSecurityMiddleware } from "../middleware/arcjet/standard";
 import { writeSecurityMiddleware } from "../middleware/arcjet/write";

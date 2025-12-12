@@ -1,4 +1,3 @@
-// providers/SearchProvider.tsx
 "use client";
 
 import {

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, ArrowUpRightIcon, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +17,7 @@ import CTASection from "./cta";
 import Footer from "./footer";
 import HowItWorksSection from "./how-it-works";
 import Features from "./features";
+import { motion } from "motion/react";
 
 const transitionVariants = {
   item: {
@@ -54,10 +57,15 @@ export default function HeroSection() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size:[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-[0.15]" />
         </div>
 
-        <section className="relative z-10 pt-20 lg:pt-32">
+        <section className="relative z-10 pt-24 lg:pt-32">
           <div className="mx-auto max-w-7xl px-6 text-center">
             {/* Badge */}
-            <div className="flex justify-center">
+            <motion.div
+              className="flex justify-center"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" as const }}
+            >
               <Announcement className="bg-muted/50 hover:bg-muted/80 border-border/40 transition-all">
                 <AnnouncementTag className="bg-primary text-primary-foreground">
                   New
@@ -70,7 +78,7 @@ export default function HeroSection() {
                   />
                 </AnnouncementTitle>
               </Announcement>
-            </div>
+            </motion.div>
 
             {/* Headline */}
             <TextEffect
