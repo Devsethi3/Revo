@@ -1,5 +1,5 @@
 {
-  "name": "revo-application",
+  "name": "revo",
   "main": "realtime/index.ts",
   "compatibility_date": "2025-12-04",
   "durable_objects": {

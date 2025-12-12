@@ -37,9 +37,14 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
   const threadRealtime = useOptionalThreadRealtime();
 
   const bump = (
-    rxns: GroupReactionSchemaType[],
+    rxns: GroupReactionSchemaType[] | undefined,
     emoji: string
   ): GroupReactionSchemaType[] => {
+    // Handle undefined or null reactions array
+    if (!rxns || !Array.isArray(rxns)) {
+      return [{ emoji, count: 1, reactedByMe: true }];
+    }
+
     const found = rxns.find((r) => r.emoji === emoji);
 
     if (found) {
@@ -83,14 +88,15 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
               parent: isParent
                 ? {
                     ...old.parent,
-                    reactions: bump(old.parent.reactions, emoji),
+                    reactions: bump(old.parent?.reactions, emoji),
                   }
                 : old.parent,
-              messages: old.messages.map((msg: MessageListItem) =>
-                msg.id === vars.messageId
-                  ? { ...msg, reactions: bump(msg.reactions, emoji) }
-                  : msg
-              ),
+              messages:
+                old.messages?.map((msg: MessageListItem) =>
+                  msg.id === vars.messageId
+                    ? { ...msg, reactions: bump(msg.reactions, emoji) }
+                    : msg
+                ) || [],
             };
           });
 
@@ -143,7 +149,17 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
         toast.success("Reaction updated");
       },
 
-      onError: (_, __, ctx) => {
+      onError: (error, variables, ctx) => {
+        // Log detailed error information for debugging
+        console.error("Reaction update failed:", {
+          error,
+          message: error instanceof Error ? error.message : "Unknown error",
+          stack: error instanceof Error ? error.stack : undefined,
+          variables,
+          context: ctx,
+        });
+
+        // Rollback optimistic updates
         if (ctx?.threadQueryKey) {
           queryClient.setQueryData(ctx.threadQueryKey, ctx.prevThread);
         }
@@ -152,7 +168,20 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
           queryClient.setQueryData(ctx.listKey, ctx.prevList);
         }
 
-        toast.error("Failed to update reaction");
+        // Show user-friendly error with details in dev mode
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred";
+
+        toast.error(
+          process.env.NODE_ENV === "development"
+            ? `Failed to update reaction: ${errorMessage}`
+            : "Failed to update reaction"
+        );
+
+        // Optional: Report to error tracking service
+        // reportError(error, { context: 'reaction-update', variables, ctx });
       },
     })
   );

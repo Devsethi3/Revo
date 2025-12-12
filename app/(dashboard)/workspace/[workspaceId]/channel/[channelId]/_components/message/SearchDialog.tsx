@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Search,
   X,
@@ -22,6 +21,8 @@ import {
   Hash,
   MessageSquare,
   ArrowRight,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -33,6 +34,25 @@ import { useThread } from "@/providers/ThreadProvider";
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_LIMIT = 20;
 const MIN_SEARCH_LENGTH = 2;
+
+// Format relative time
+const formatRelativeTime = (date: Date): string => {
+  const now = new Date();
+  const diffMs = now.getTime() - new Date(date).getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+  }).format(new Date(date));
+};
 
 interface SearchResultItemProps {
   result: {
@@ -47,20 +67,20 @@ interface SearchResultItemProps {
     threadId: string | null;
     replyCount: number;
   };
-  query: string;
   onNavigate: (
     messageId: string,
     channelId: string,
     threadId?: string | null
   ) => void;
   isCurrentChannel: boolean;
+  isSelected: boolean;
 }
 
 const SearchResultItem = ({
   result,
-  query,
   onNavigate,
   isCurrentChannel,
+  isSelected,
 }: SearchResultItemProps) => {
   const handleClick = useCallback(() => {
     if (result.channelId) {
@@ -68,11 +88,9 @@ const SearchResultItem = ({
     }
   }, [result, onNavigate]);
 
-  // Parse content for preview
   const highlightedContent = useMemo(() => {
     try {
-      const parsed = JSON.parse(result.content);
-      return parsed;
+      return JSON.parse(result.content);
     } catch {
       return result.content;
     }
@@ -82,60 +100,69 @@ const SearchResultItem = ({
     <button
       onClick={handleClick}
       className={cn(
-        "w-full text-left p-3 rounded-lg",
-        "hover:bg-muted/60 focus:bg-muted/60",
-        "transition-colors duration-150",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
-        "group"
+        "w-full text-left p-2.5 sm:p-3 rounded-xl",
+        "transition-all duration-150",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "group relative",
+        isSelected
+          ? "bg-primary/10 ring-1 ring-primary/20"
+          : "hover:bg-muted/60 active:bg-muted/80"
       )}
     >
-      <div className="flex gap-3">
+      <div className="flex gap-2.5 sm:gap-3">
         {/* Author Avatar */}
         <Image
           src={getAvatar(result.authorAvatar, result.authorEmail)}
           alt={result.authorName}
-          width={36}
-          height={36}
-          className="size-9 rounded-lg shrink-0"
+          width={40}
+          height={40}
+          className="size-8 sm:size-10 rounded-full shrink-0 ring-2 ring-background"
         />
 
         <div className="flex-1 min-w-0 space-y-1">
-          {/* Header: Author, Channel, Time */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium truncate">{result.authorName}</span>
-            <span className="text-muted-foreground">in</span>
-            <span className="inline-flex items-center gap-0.5 text-muted-foreground">
-              <Hash className="size-3" />
-              <span className="truncate max-w-[120px]">
-                {result.channelName}
+          {/* Header Row */}
+          <div className="flex items-start sm:items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 min-w-0">
+              {/* Author Name */}
+              <span className="font-semibold text-sm truncate max-w-[150px] sm:max-w-none">
+                {result.authorName}
               </span>
-              {isCurrentChannel && (
-                <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded">
-                  current
+
+              {/* Channel Badge */}
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 text-xs",
+                  "px-1.5 py-0.5 rounded-md",
+                  isCurrentChannel
+                    ? "bg-primary/10 text-primary"
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
+                <Hash className="size-3" />
+                <span className="truncate max-w-20 sm:max-w-[120px]">
+                  {result.channelName}
                 </span>
-              )}
-            </span>
-            <span className="text-muted-foreground text-xs ml-auto shrink-0">
-              {new Intl.DateTimeFormat("en-GB", {
-                day: "numeric",
-                month: "short",
-                hour: "2-digit",
-                minute: "2-digit",
-              }).format(new Date(result.createdAt))}
+              </span>
+            </div>
+
+            {/* Time */}
+            <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 flex items-center gap-1">
+              <Clock className="size-3 hidden sm:inline" />
+              {formatRelativeTime(result.createdAt)}
             </span>
           </div>
 
           {/* Message Content Preview */}
-          <div className="text-sm text-muted-foreground line-clamp-2">
+          <div className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
             <SafeContent
               content={highlightedContent}
-              className="prose-sm dark:prose-invert max-w-none **:text-muted-foreground!"
+              className="prose-sm dark:prose-invert max-w-none **:text-muted-foreground **:text-sm"
             />
           </div>
 
           {/* Thread indicator */}
           {result.threadId && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="inline-flex items-center gap-1.5 text-xs text-primary/80 bg-primary/5 px-2 py-1 rounded-full">
               <MessageSquare className="size-3" />
               <span>Reply in thread</span>
             </div>
@@ -143,38 +170,58 @@ const SearchResultItem = ({
         </div>
 
         {/* Navigate arrow */}
-        <ArrowRight
+        <div
           className={cn(
-            "size-4 text-muted-foreground shrink-0 mt-1",
-            "opacity-0 group-hover:opacity-100 transition-opacity"
+            "flex items-center justify-center",
+            "size-8 rounded-full shrink-0",
+            "bg-transparent group-hover:bg-primary/10",
+            "transition-all duration-150",
+            "opacity-0 group-hover:opacity-100 group-focus:opacity-100"
           )}
-        />
+        >
+          <ArrowRight className="size-4 text-primary" />
+        </div>
       </div>
     </button>
   );
 };
 
 const EmptySearchState = ({ query }: { query: string }) => (
-  <div className="flex flex-col items-center justify-center py-12 text-center">
-    <div className="size-12 rounded-full bg-muted flex items-center justify-center mb-4">
-      <Search className="size-6 text-muted-foreground" />
+  <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-4 text-center">
+    <div className="size-14 sm:size-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+      <Search className="size-6 sm:size-7 text-muted-foreground/60" />
     </div>
-    <h3 className="font-medium text-base mb-1">No results found</h3>
-    <p className="text-sm text-muted-foreground max-w-[250px]">
-      No messages match &quot;{query}&quot;. Try different keywords.
+    <h3 className="font-semibold text-base sm:text-lg mb-1">
+      No results found
+    </h3>
+    <p className="text-sm text-muted-foreground max-w-[280px]">
+      No messages match &ldquo;
+      <span className="font-medium text-foreground">{query}</span>
+      &rdquo;. Try different keywords.
     </p>
   </div>
 );
 
 const InitialSearchState = () => (
-  <div className="flex flex-col items-center justify-center py-12 text-center">
-    <div className="size-12 rounded-full bg-muted flex items-center justify-center mb-4">
-      <Search className="size-6 text-muted-foreground" />
+  <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-4 text-center">
+    <div className="size-14 sm:size-16 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+      <Search className="size-6 sm:size-7 text-primary" />
     </div>
-    <h3 className="font-medium text-base mb-1">Search messages</h3>
-    <p className="text-sm text-muted-foreground max-w-[250px]">
-      Type at least {MIN_SEARCH_LENGTH} characters to search through messages
+    <h3 className="font-semibold text-base sm:text-lg mb-1">Search messages</h3>
+    <p className="text-sm text-muted-foreground max-w-[280px]">
+      Type at least {MIN_SEARCH_LENGTH} characters to search through your
+      messages
     </p>
+  </div>
+);
+
+const LoadingState = () => (
+  <div className="flex flex-col items-center justify-center py-12 gap-3">
+    <div className="relative">
+      <div className="size-10 rounded-full border-2 border-muted" />
+      <Loader2 className="size-10 animate-spin text-primary absolute inset-0" />
+    </div>
+    <p className="text-sm text-muted-foreground">Searching messages...</p>
   </div>
 );
 
@@ -195,6 +242,7 @@ export function SearchDialog() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [searchInChannel, setSearchInChannel] = useState(true);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const debouncedQuery = useDebounce(searchQuery, SEARCH_DEBOUNCE_MS);
   const shouldSearch = debouncedQuery.length >= MIN_SEARCH_LENGTH;
@@ -242,6 +290,11 @@ export function SearchDialog() {
 
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 
+  // Reset selected index when results change
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [results]);
+
   // Focus input when dialog opens
   useEffect(() => {
     if (isOpen) {
@@ -263,42 +316,26 @@ export function SearchDialog() {
     }
   }, [hasNextPage, isFetching, fetchNextPage]);
 
-  // Keyboard shortcut to close
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        closeSearch();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeSearch]);
-
   // Navigate to message with highlight support
   const handleNavigate = useCallback(
     (messageId: string, channelId: string, threadId?: string | null) => {
       const isCurrentChannel = channelId === params.channelId;
 
-      // Set navigation target for highlighting
       setNavigationTarget({
         messageId,
         channelId,
         threadId,
       });
 
-      // If it's a thread reply, open the thread
       if (threadId) {
         if (!isCurrentChannel) {
           router.push(`/workspace/${params.workspaceId}/channel/${channelId}`);
-          // Store thread ID to open after navigation
           sessionStorage.setItem("pendingThreadId", threadId);
           sessionStorage.setItem("pendingMessageId", messageId);
         } else {
           openThread(threadId);
         }
       } else if (!isCurrentChannel) {
-        // Navigate to the channel
         router.push(`/workspace/${params.workspaceId}/channel/${channelId}`);
       }
 
@@ -314,21 +351,99 @@ export function SearchDialog() {
     ]
   );
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      switch (e.key) {
+        case "Escape":
+          closeSearch();
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.max(prev - 1, 0));
+          break;
+        case "Enter":
+          e.preventDefault();
+          const selectedResult = results[selectedIndex];
+          if (selectedResult?.channelId) {
+            handleNavigate(
+              selectedResult.id,
+              selectedResult.channelId,
+              selectedResult.threadId
+            );
+          }
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, closeSearch, results, selectedIndex, handleNavigate]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (results.length > 0 && scrollRef.current) {
+      const selectedElement = scrollRef.current.querySelector(
+        `[data-index="${selectedIndex}"]`
+      );
+      selectedElement?.scrollIntoView({ block: "nearest" });
+    }
+  }, [selectedIndex, results.length]);
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeSearch()}>
-      <DialogContent className="sm:max-w-[600px] p-0 gap-0 max-h-[80vh] flex flex-col">
-        <DialogHeader className="p-4 pb-0">
+      <DialogContent
+        showCloseButton={false}
+        className={cn(
+          "p-0 gap-0 overflow-hidden",
+          "w-[calc(100vw-2rem)] sm:w-full",
+          "max-w-[95vw] sm:max-w-[600px]",
+          "max-h-[85vh] sm:max-h-[80vh]",
+          "flex flex-col",
+          "rounded-2xl"
+        )}
+      >
+        {/* Header */}
+        <DialogHeader className="p-3 sm:p-4 pb-0 space-y-3">
           <DialogTitle className="sr-only">Search Messages</DialogTitle>
 
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <div
+              className={cn(
+                "absolute left-3 top-1/2 -translate-y-1/2",
+                "flex items-center justify-center",
+                isFetching && shouldSearch
+                  ? "animate-pulse"
+                  : "text-muted-foreground"
+              )}
+            >
+              {isFetching && shouldSearch ? (
+                <Loader2 className="size-4 sm:size-5 animate-spin text-primary" />
+              ) : (
+                <Search className="size-4 sm:size-5" />
+              )}
+            </div>
             <Input
               ref={inputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search messages..."
-              className="pl-10 pr-10 h-11"
+              className={cn(
+                "pl-10 sm:pl-11 pr-10 sm:pr-11",
+                "h-11 sm:h-12",
+                "text-base",
+                "rounded-xl",
+                "border-muted-foreground/20",
+                "focus-visible:ring-primary/20 focus-visible:ring-offset-0",
+                "placeholder:text-muted-foreground/60"
+              )}
             />
             {searchQuery && (
               <Button
@@ -336,7 +451,12 @@ export function SearchDialog() {
                 variant="ghost"
                 size="icon"
                 onClick={clearSearch}
-                className="absolute right-1 top-1/2 -translate-y-1/2 size-8"
+                className={cn(
+                  "absolute right-1 top-1/2 -translate-y-1/2",
+                  "size-8 sm:size-9",
+                  "rounded-lg",
+                  "hover:bg-muted"
+                )}
               >
                 <X className="size-4" />
                 <span className="sr-only">Clear search</span>
@@ -346,23 +466,35 @@ export function SearchDialog() {
 
           {/* Search scope toggle */}
           {currentChannelId && (
-            <div className="flex items-center gap-2 pt-3">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Button
                 type="button"
-                variant={searchInChannel ? "secondary" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setSearchInChannel(true)}
-                className="h-7 text-xs"
+                className={cn(
+                  "h-8 sm:h-9 px-3 text-xs sm:text-sm rounded-lg",
+                  "transition-all duration-150",
+                  searchInChannel
+                    ? "bg-primary/10 text-primary hover:bg-primary/15"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                <Hash className="size-3 mr-1" />
-                Current channel
+                <Hash className="size-3 sm:size-3.5 mr-1.5" />
+                <span className="hidden xs:inline">Current</span> channel
               </Button>
               <Button
                 type="button"
-                variant={!searchInChannel ? "secondary" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setSearchInChannel(false)}
-                className="h-7 text-xs"
+                className={cn(
+                  "h-8 sm:h-9 px-3 text-xs sm:text-sm rounded-lg",
+                  "transition-all duration-150",
+                  !searchInChannel
+                    ? "bg-primary/10 text-primary hover:bg-primary/15"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
                 All channels
               </Button>
@@ -370,83 +502,122 @@ export function SearchDialog() {
           )}
         </DialogHeader>
 
+        {/* Divider */}
+        <div className="h-px bg-border mx-3 sm:mx-4 mt-3" />
+
         {/* Results area */}
-        <div className="flex-1 min-h-0 border-t mt-3">
+        <div className="flex-1 min-h-0 overflow-hidden">
           {!shouldSearch ? (
             <InitialSearchState />
           ) : isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
-            </div>
+            <LoadingState />
           ) : results.length === 0 ? (
             <EmptySearchState query={debouncedQuery} />
           ) : (
-            <>
+            <div className="h-full flex flex-col">
               {/* Results count */}
-              <div className="px-4 py-2 text-xs text-muted-foreground border-b">
-                {totalCount} {totalCount === 1 ? "result" : "results"} found
+              <div className="px-3 sm:px-4 py-2 flex items-center justify-between">
+                <span className="text-xs sm:text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {totalCount}
+                  </span>{" "}
+                  {totalCount === 1 ? "result" : "results"} found
+                </span>
+                {searchInChannel && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Hash className="size-3" />
+                    <span className="hidden sm:inline">in current channel</span>
+                  </span>
+                )}
               </div>
 
               {/* Scrollable results */}
-              <ScrollArea className="h-[400px]">
-                <div
-                  ref={scrollRef}
-                  onScroll={handleScroll}
-                  className="p-2 space-y-1 h-full overflow-y-auto"
-                >
-                  {results.map((result) => (
-                    <SearchResultItem
-                      key={result.id}
-                      result={result}
-                      query={debouncedQuery}
-                      onNavigate={handleNavigate}
-                      isCurrentChannel={result.channelId === params.channelId}
-                    />
+              <div
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className={cn(
+                  "flex-1 overflow-y-auto",
+                  "px-2 sm:px-3 pb-2",
+                  "scrollbar-thin scrollbar-track-transparent",
+                  "scrollbar-thumb-muted-foreground/20"
+                )}
+              >
+                <div className="space-y-1">
+                  {results.map((result, index) => (
+                    <div key={result.id} data-index={index}>
+                      <SearchResultItem
+                        result={result}
+                        onNavigate={handleNavigate}
+                        isCurrentChannel={result.channelId === params.channelId}
+                        isSelected={index === selectedIndex}
+                      />
+                    </div>
                   ))}
 
                   {/* Load more indicator */}
                   {isFetchingNextPage && (
-                    <div className="flex items-center justify-center py-4">
+                    <div className="flex items-center justify-center py-4 gap-2">
                       <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        Loading more...
+                      </span>
                     </div>
                   )}
 
                   {/* End of results */}
                   {!hasNextPage && results.length > 0 && (
-                    <div className="text-center py-4 text-xs text-muted-foreground">
-                      End of results
+                    <div className="text-center py-4">
+                      <span className="text-xs text-muted-foreground px-3 py-1.5 bg-muted/50 rounded-full">
+                        End of results
+                      </span>
                     </div>
                   )}
                 </div>
-              </ScrollArea>
-            </>
+              </div>
+            </div>
           )}
         </div>
 
         {/* Footer with keyboard hints */}
-        <div className="border-t p-2 flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+        <div
+          className={cn(
+            "border-t px-3 sm:px-4 py-2 sm:py-2.5",
+            "flex items-center justify-between",
+            "bg-muted/30"
+          )}
+        >
+          <div className="flex items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
+            <span className="hidden sm:flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
+                ↑
+              </kbd>
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
+                ↓
+              </kbd>
+              <span className="text-muted-foreground/70">navigate</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
                 ↵
               </kbd>
-              <span>to select</span>
+              <span className="text-muted-foreground/70">select</span>
             </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
                 esc
               </kbd>
-              <span>to close</span>
+              <span className="text-muted-foreground/70">close</span>
             </span>
           </div>
-          <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+
+          <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
+            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
               ⌘
             </kbd>
-            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
               K
             </kbd>
-            <span>to toggle</span>
+            <span className="text-muted-foreground/70">toggle</span>
           </span>
         </div>
       </DialogContent>

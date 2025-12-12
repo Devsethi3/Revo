@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { ArrowRight, BadgeCheckIcon, CheckIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { RippleEffect } from "../ui/ripple-effect";
 
 export default function CTASection() {
   return (
@@ -84,19 +85,21 @@ export default function CTASection() {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="h-12 min-w-40 border-border bg-background px-8 text-base hover:bg-muted/50"
-              >
-                <Link href="/">Contact</Link>
-              </Button>
+              <RippleEffect className="rounded-lg">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-12 min-w-40 border-border bg-background px-8 text-base hover:bg-muted/50"
+                >
+                  <Link href="/">Contact</Link>
+                </Button>
+              </RippleEffect>
             </div>
 
             <div className="flex items-center justify-center gap-3 pt-6">
               <BadgeCheckIcon className="size-4 text-primary" />
-              <span className="text-sm">No credit card required</span>  
+              <span className="text-sm">No credit card required</span>
             </div>
           </div>
         </motion.div>

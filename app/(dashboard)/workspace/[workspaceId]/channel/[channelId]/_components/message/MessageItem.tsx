@@ -3,7 +3,7 @@ import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { getAvatar } from "@/lib/get-avatar";
 import Image from "next/image";
 import { MessageHoverToolbar } from "../toolbar";
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useState, useMemo } from "react";
 import EditMessage from "../toolbar/EditMessage";
 import { MessageListItem } from "@/lib/types";
 import { MessageSquareIcon } from "lucide-react";
@@ -33,6 +33,29 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
       threadId: message.threadId,
     });
 
+    // Memoize reply count to avoid recalculation
+    const replyCount = useMemo(() => {
+      const count = Number(message.replyCount);
+      return isNaN(count) || count < 0 ? 0 : count;
+    }, [message.replyCount]);
+
+    // Memoize formatted date strings
+    const formattedDate = useMemo(() => {
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(message.createdAt);
+    }, [message.createdAt]);
+
+    const formattedTime = useMemo(() => {
+      return new Intl.DateTimeFormat("en-GB", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(message.createdAt);
+    }, [message.createdAt]);
+
     const prefetchThread = useCallback(() => {
       const options = orpc.message.thread.list.queryOptions({
         input: {
@@ -44,12 +67,12 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
         .catch(() => {});
     }, [message.id, queryClient]);
 
-    const handleMessageTap = () => {
+    const handleMessageTap = useCallback(() => {
       // Only toggle on mobile/touch devices
       if (window.matchMedia("(max-width: 768px)").matches) {
         setShowMobileMenu((prev) => !prev);
       }
-    };
+    }, []);
 
     const handleDelete = useCallback(
       async (messageId: string) => {
@@ -57,6 +80,31 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
       },
       [deleteMessage]
     );
+
+    const handleThreadClick = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation();
+        openThread(message.id);
+      },
+      [openThread, message.id]
+    );
+
+    const handleEditClick = useCallback(() => {
+      setIsEditing(true);
+      setShowMobileMenu(false);
+    }, []);
+
+    const handleEditCancel = useCallback(() => {
+      setIsEditing(false);
+    }, []);
+
+    const handleEditSave = useCallback(() => {
+      setIsEditing(false);
+    }, []);
+
+    const handleMobileMenuClose = useCallback(() => {
+      setShowMobileMenu(false);
+    }, []);
 
     return (
       <div
@@ -91,16 +139,7 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
               {message.authorName}
             </p>
             <p className="text-[10px] sm:text-xs text-muted-foreground leading-none">
-              {new Intl.DateTimeFormat("en-GB", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              }).format(message.createdAt)}{" "}
-              {new Intl.DateTimeFormat("en-GB", {
-                hour12: false,
-                hour: "2-digit",
-                minute: "2-digit",
-              }).format(message.createdAt)}
+              {formattedDate} {formattedTime}
             </p>
           </div>
 
@@ -108,8 +147,8 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
           {isEditing ? (
             <EditMessage
               message={message}
-              onCancel={() => setIsEditing(false)}
-              onSave={() => setIsEditing(false)}
+              onCancel={handleEditCancel}
+              onSave={handleEditSave}
             />
           ) : (
             <>
@@ -139,21 +178,20 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
               />
 
               {/* Thread Reply Count */}
-              {message.replyCount > 0 && (
+              {replyCount > 0 && (
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openThread(message.id);
-                  }}
+                  onClick={handleThreadClick}
                   type="button"
                   className="mt-1 cursor-pointer inline-flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded px-1 py-0.5 -ml-1 transition-colors"
                   onMouseEnter={prefetchThread}
                   onFocus={prefetchThread}
+                  aria-label={`View ${replyCount} ${
+                    replyCount === 1 ? "reply" : "replies"
+                  }`}
                 >
                   <MessageSquareIcon className="size-3 sm:size-3.5" />
                   <span>
-                    {message.replyCount}{" "}
-                    {message.replyCount === 1 ? "reply" : "replies"}
+                    {replyCount} {replyCount === 1 ? "reply" : "replies"}
                   </span>
                   <span className="hidden sm:inline opacity-0 group-hover:opacity-100 transition-opacity">
                     View Thread
@@ -168,13 +206,10 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
         <MessageHoverToolbar
           messageId={message.id}
           canEdit={message.authorId === currentUserId}
-          onEdit={() => {
-            setIsEditing(true);
-            setShowMobileMenu(false);
-          }}
+          onEdit={handleEditClick}
           onDelete={handleDelete}
           showMobile={showMobileMenu}
-          onClose={() => setShowMobileMenu(false)}
+          onClose={handleMobileMenuClose}
         />
       </div>
     );

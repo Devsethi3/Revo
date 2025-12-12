@@ -16,6 +16,7 @@ import ThemeSwitcher from "../ui/theme-switcher";
 import LogoIcon from "../general/LogoIcon";
 import { ThemeToggle } from "../ui/theme-toggle";
 import UserNav from "@/app/(dashboard)/workspace/_components/UserNav";
+import { RippleEffect } from "../ui/ripple-effect";
 
 const menuItems = [
   { name: "Features", href: "#link" },
@@ -143,15 +144,18 @@ export const HeroHeader = () => {
                       >
                         Register
                       </RegisterLink>
-                      <Button
-                        asChild
-                        size="sm"
-                        className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                      >
-                        <Link href="#">
-                          <span>Get Started</span>
-                        </Link>
-                      </Button>
+                      <RippleEffect>
+                        <Button
+                          asChild
+                          className={cn(
+                            isScrolled ? "lg:inline-flex" : "hidden"
+                          )}
+                        >
+                          <Link href="/">
+                            <span>Get Started</span>
+                          </Link>
+                        </Button>
+                      </RippleEffect>
                     </>
                   )}
                 </div>

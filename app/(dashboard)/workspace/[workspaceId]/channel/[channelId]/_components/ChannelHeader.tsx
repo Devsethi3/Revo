@@ -108,7 +108,7 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
             <TooltipContent side="bottom">
               <span className="flex items-center gap-2">
                 Search
-                <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+                <kbd className="px-1.5 py-0.5 bg-accent text-primary rounded text-[10px] font-mono">
                   ⌘K
                 </kbd>
               </span>

@@ -133,31 +133,33 @@ const LoadingIndicator = memo(({ isVisible }: { isVisible: boolean }) => (
 LoadingIndicator.displayName = "LoadingIndicator";
 
 // Searching Message Indicator
-const SearchingMessageIndicator = memo(({ isVisible }: { isVisible: boolean }) => (
-  <div
-    className={cn(
-      "pointer-events-none absolute inset-0 z-30",
-      "flex items-center justify-center",
-      "bg-background/80 backdrop-blur-sm",
-      "transition-all duration-300 ease-out",
-      isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-    )}
-  >
+const SearchingMessageIndicator = memo(
+  ({ isVisible }: { isVisible: boolean }) => (
     <div
       className={cn(
-        "flex flex-col items-center gap-3",
-        "rounded-xl",
-        "bg-background shadow-lg border",
-        "px-6 py-4"
+        "pointer-events-none absolute inset-0 z-30",
+        "flex items-center justify-center",
+        "bg-background/80 backdrop-blur-sm",
+        "transition-all duration-300 ease-out",
+        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
     >
-      <Loader2 className="size-6 animate-spin text-primary" />
-      <span className="text-sm text-muted-foreground">
-        Finding message...
-      </span>
+      <div
+        className={cn(
+          "flex flex-col items-center gap-3",
+          "rounded-xl",
+          "bg-background shadow-lg border",
+          "px-6 py-4"
+        )}
+      >
+        <Loader2 className="size-6 animate-spin text-primary" />
+        <span className="text-sm text-muted-foreground">
+          Finding message...
+        </span>
+      </div>
     </div>
-  </div>
-));
+  )
+);
 SearchingMessageIndicator.displayName = "SearchingMessageIndicator";
 
 // Scroll to Bottom Button
@@ -204,9 +206,11 @@ const MessageList = () => {
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [isAtBottom, setIsAtBottom] = useState(true);
   const lastItemIdRef = useRef<string | undefined>(undefined);
-  
+
   // Highlight state
-  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
+  const [highlightedMessageId, setHighlightedMessageId] = useState<
+    string | null
+  >(null);
   const [isSearchingMessage, setIsSearchingMessage] = useState(false);
   const fetchAttemptsRef = useRef(0);
 
@@ -260,13 +264,16 @@ const MessageList = () => {
   );
 
   // Register message ref
-  const registerMessageRef = useCallback((id: string, el: HTMLDivElement | null) => {
-    if (el) {
-      messageRefs.current.set(id, el);
-    } else {
-      messageRefs.current.delete(id);
-    }
-  }, []);
+  const registerMessageRef = useCallback(
+    (id: string, el: HTMLDivElement | null) => {
+      if (el) {
+        messageRefs.current.set(id, el);
+      } else {
+        messageRefs.current.delete(id);
+      }
+    },
+    []
+  );
 
   // Scroll to specific message
   const scrollToMessage = useCallback((messageId: string) => {
@@ -276,17 +283,18 @@ const MessageList = () => {
       const container = scrollRef.current;
       const messageRect = messageEl.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
-      
-      const scrollTop = container.scrollTop + (messageRect.top - containerRect.top) - 100;
-      
+
+      const scrollTop =
+        container.scrollTop + (messageRect.top - containerRect.top) - 100;
+
       container.scrollTo({
         top: Math.max(0, scrollTop),
-        behavior: 'smooth'
+        behavior: "smooth",
       });
 
       // Highlight the message
       setHighlightedMessageId(messageId);
-      
+
       // Clear highlight after duration
       setTimeout(() => {
         setHighlightedMessageId(null);
@@ -306,7 +314,7 @@ const MessageList = () => {
     const targetMessageId = navigationTarget.messageId;
 
     // Check if message is already loaded
-    const messageExists = items.some(item => item.id === targetMessageId);
+    const messageExists = items.some((item) => item.id === targetMessageId);
 
     if (messageExists) {
       // Small delay to ensure DOM is ready
@@ -316,14 +324,18 @@ const MessageList = () => {
         setIsSearchingMessage(false);
         fetchAttemptsRef.current = 0;
       });
-    } else if (hasNextPage && !isFetching && fetchAttemptsRef.current < MAX_FETCH_ATTEMPTS) {
+    } else if (
+      hasNextPage &&
+      !isFetching &&
+      fetchAttemptsRef.current < MAX_FETCH_ATTEMPTS
+    ) {
       // Message not found, fetch more
       setIsSearchingMessage(true);
       fetchAttemptsRef.current += 1;
       fetchNextPage();
     } else if (!hasNextPage || fetchAttemptsRef.current >= MAX_FETCH_ATTEMPTS) {
       // Message not found after all attempts or no more pages
-      console.warn('Message not found in channel');
+      console.warn("Message not found in channel");
       clearNavigationTarget();
       setIsSearchingMessage(false);
       fetchAttemptsRef.current = 0;
@@ -336,7 +348,7 @@ const MessageList = () => {
     isFetching,
     fetchNextPage,
     scrollToMessage,
-    clearNavigationTarget
+    clearNavigationTarget,
   ]);
 
   // Group messages with date separators
@@ -405,7 +417,7 @@ const MessageList = () => {
     const scrollToBottomIfNeeded = () => {
       // Don't auto-scroll if searching for a message
       if (isSearchingMessage || highlightedMessageId) return;
-      
+
       if (isAtBottom || !hasInitialScrolled) {
         requestAnimationFrame(() => {
           bottomRef.current?.scrollIntoView({ block: "end" });
@@ -437,7 +449,12 @@ const MessageList = () => {
       el.removeEventListener("load", onImageLoad, true);
       mutationObserver.disconnect();
     };
-  }, [isAtBottom, hasInitialScrolled, isSearchingMessage, highlightedMessageId]);
+  }, [
+    isAtBottom,
+    hasInitialScrolled,
+    isSearchingMessage,
+    highlightedMessageId,
+  ]);
 
   // Handle scroll for infinite loading
   const handleScroll = useCallback(() => {
@@ -445,7 +462,12 @@ const MessageList = () => {
     if (!el) return;
 
     // Fetch more when scrolled near top (but not when searching for message)
-    if (el.scrollTop <= SCROLL_THRESHOLD && hasNextPage && !isFetching && !isSearchingMessage) {
+    if (
+      el.scrollTop <= SCROLL_THRESHOLD &&
+      hasNextPage &&
+      !isFetching &&
+      !isSearchingMessage
+    ) {
       const prevScrollHeight = el.scrollHeight;
       const prevScrollTop = el.scrollTop;
 
@@ -458,7 +480,13 @@ const MessageList = () => {
     }
 
     setIsAtBottom(isNearBottom(el));
-  }, [hasNextPage, isFetching, fetchNextPage, isNearBottom, isSearchingMessage]);
+  }, [
+    hasNextPage,
+    isFetching,
+    fetchNextPage,
+    isNearBottom,
+    isSearchingMessage,
+  ]);
 
   // Auto-scroll on new messages
   useEffect(() => {

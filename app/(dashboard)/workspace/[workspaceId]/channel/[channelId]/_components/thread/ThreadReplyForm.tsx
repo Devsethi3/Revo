@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import MessageComposer from "../message/MessageComposer";
 import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   InfiniteData,
   useMutation,
@@ -18,7 +18,6 @@ import {
 } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
-import { Message } from "@/lib/generated/prisma/client";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { getAvatar } from "@/lib/get-avatar";
 import { MessageListItem } from "@/lib/types";
