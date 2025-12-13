@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error — PrismaPlugin has no published TypeScript types
-import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -24,13 +21,6 @@ const nextConfig: NextConfig = {
         protocol: "https",
       },
     ],
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.plugins = [...config.plugins, new PrismaPlugin()];
-    }
-
-    return config;
   },
 };
 
