@@ -17,8 +17,8 @@ import { useSearch } from "@/providers/SearchProvider";
 const SCROLL_THRESHOLD = 80;
 const MESSAGES_PER_PAGE = 10;
 const STALE_TIME = 30_000;
-const HIGHLIGHT_DURATION = 3000; // 3 seconds
-const MAX_FETCH_ATTEMPTS = 10; // Maximum pages to fetch when searching for a message
+const HIGHLIGHT_DURATION = 3000;
+const MAX_FETCH_ATTEMPTS = 10;
 
 // Date Utilities
 const getDateKey = (date: Date): string => {
@@ -213,6 +213,9 @@ const MessageList = () => {
   const [isSearchingMessage, setIsSearchingMessage] = useState(false);
   const fetchAttemptsRef = useRef(0);
 
+  // Ref to track if we should skip initial scroll due to navigation target
+  const skipInitialScrollRef = useRef(false);
+
   // Query configuration
   const infiniteOptions = useMemo(
     () =>
@@ -278,7 +281,6 @@ const MessageList = () => {
   const scrollToMessage = useCallback((messageId: string) => {
     const messageEl = messageRefs.current.get(messageId);
     if (messageEl && scrollRef.current) {
-      // Scroll to the message with some offset from top
       const container = scrollRef.current;
       const messageRect = messageEl.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
@@ -291,10 +293,8 @@ const MessageList = () => {
         behavior: "smooth",
       });
 
-      // Highlight the message
       setHighlightedMessageId(messageId);
 
-      // Clear highlight after duration
       setTimeout(() => {
         setHighlightedMessageId(null);
       }, HIGHLIGHT_DURATION);
@@ -311,12 +311,10 @@ const MessageList = () => {
     }
 
     const targetMessageId = navigationTarget.messageId;
-
-    // Check if message is already loaded
     const messageExists = items.some((item) => item.id === targetMessageId);
 
     if (messageExists) {
-      // Small delay to ensure DOM is ready
+      // Message found - scroll to it
       requestAnimationFrame(() => {
         scrollToMessage(targetMessageId);
         clearNavigationTarget();
@@ -328,16 +326,25 @@ const MessageList = () => {
       !isFetching &&
       fetchAttemptsRef.current < MAX_FETCH_ATTEMPTS
     ) {
-      // Message not found, fetch more
-      setIsSearchingMessage(true);
+      // Message not found, need to fetch more - defer state update
       fetchAttemptsRef.current += 1;
+
+      // Use queueMicrotask to defer the setState call
+      queueMicrotask(() => {
+        setIsSearchingMessage(true);
+      });
+
       fetchNextPage();
     } else if (!hasNextPage || fetchAttemptsRef.current >= MAX_FETCH_ATTEMPTS) {
       // Message not found after all attempts or no more pages
       console.warn("Message not found in channel");
-      clearNavigationTarget();
-      setIsSearchingMessage(false);
-      fetchAttemptsRef.current = 0;
+
+      // Defer state updates
+      queueMicrotask(() => {
+        clearNavigationTarget();
+        setIsSearchingMessage(false);
+        fetchAttemptsRef.current = 0;
+      });
     }
   }, [
     navigationTarget,
@@ -388,11 +395,21 @@ const MessageList = () => {
     []
   );
 
+  // Check if we should skip initial scroll (due to navigation target)
+  useEffect(() => {
+    if (navigationTarget?.channelId === channelId) {
+      skipInitialScrollRef.current = true;
+    }
+  }, [navigationTarget, channelId]);
+
   // Initial scroll to bottom
   useEffect(() => {
     // Don't auto-scroll if we have a navigation target
-    if (navigationTarget?.channelId === channelId) {
-      setHasInitialScrolled(true);
+    if (skipInitialScrollRef.current) {
+      // Mark as scrolled but don't actually scroll
+      requestAnimationFrame(() => {
+        setHasInitialScrolled(true);
+      });
       return;
     }
 
@@ -406,7 +423,7 @@ const MessageList = () => {
         });
       }
     }
-  }, [hasInitialScrolled, data?.pages.length, navigationTarget, channelId]);
+  }, [hasInitialScrolled, data?.pages.length]);
 
   // Handle content changes (images, resize, mutations)
   useEffect(() => {
@@ -498,8 +515,11 @@ const MessageList = () => {
     if (prevLastId && lastId !== prevLastId && el && isNearBottom(el)) {
       requestAnimationFrame(() => {
         el.scrollTop = el.scrollHeight;
+        // Defer state update to avoid synchronous setState in effect
+        queueMicrotask(() => {
+          setIsAtBottom(true);
+        });
       });
-      setIsAtBottom(true);
     }
 
     lastItemIdRef.current = lastId;

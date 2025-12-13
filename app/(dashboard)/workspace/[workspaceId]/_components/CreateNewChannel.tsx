@@ -30,7 +30,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 const CreateNewChannel = () => {
@@ -42,9 +42,7 @@ const CreateNewChannel = () => {
 
   const form = useForm({
     resolver: zodResolver(ChannelNameSchema),
-    defaultValues: {
-      name: "",
-    },
+    defaultValues: { name: "" },
   });
 
   const createChannelMutation = useMutation(
@@ -74,7 +72,11 @@ const CreateNewChannel = () => {
     createChannelMutation.mutate(values);
   }
 
-  const watchedName = form.watch("name");
+  const watchedName = useWatch({
+    control: form.control,
+    name: "name",
+  });
+
   const transformedName = watchedName ? transformChannelName(watchedName) : "";
 
   return (

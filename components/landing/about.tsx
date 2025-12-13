@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import {
   MessageSquare,
   Hash,
-  Zap,
   MessageCircle,
   Smile,
   UserPlus,

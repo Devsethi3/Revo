@@ -29,7 +29,8 @@ const MembersOverview = () => {
 
   const { data: workspaceData } = useQuery(orpc.workspace.list.queryOptions());
 
-  const members = data ?? [];
+  const members = useMemo(() => data ?? [], [data]);
+
   const query = search.trim().toLowerCase();
 
   const filteredMembers = useMemo(() => {
@@ -41,15 +42,14 @@ const MembersOverview = () => {
     });
   }, [members, query]);
 
-  const currentUser = useMemo(() => {
-    if (!workspaceData?.user) return null;
-    return {
-      id: workspaceData.user.id,
-      full_name: workspaceData.user.given_name,
-      email: workspaceData.user.email,
-      picture: workspaceData.user.picture,
-    } satisfies User;
-  }, [workspaceData?.user]);
+  const currentUser: User | null = workspaceData?.user
+    ? {
+        id: workspaceData.user.id,
+        full_name: workspaceData.user.given_name,
+        email: workspaceData.user.email,
+        picture: workspaceData.user.picture,
+      }
+    : null;
 
   const { onlineUsers } = usePresence({
     room: `workspace-${workspaceId}`,

@@ -15,22 +15,20 @@ const WorkspaceMembersList = () => {
   const {
     data: { members },
   } = useSuspenseQuery(orpc.channel.list.queryOptions());
-  
+
   const params = useParams();
   const workspaceId = params.workspaceId;
 
   const { data: workspaceData } = useQuery(orpc.workspace.list.queryOptions());
 
-  const currentUser = useMemo(() => {
-    if (!workspaceData?.user) return null;
-
-    return {
-      id: workspaceData.user.id,
-      full_name: workspaceData.user.given_name,
-      email: workspaceData.user.email,
-      picture: workspaceData.user.picture,
-    } satisfies User;
-  }, [workspaceData?.user]);
+  const currentUser: User | null = workspaceData?.user
+    ? {
+        id: workspaceData.user.id,
+        full_name: workspaceData.user.given_name,
+        email: workspaceData.user.email,
+        picture: workspaceData.user.picture,
+      }
+    : null;
 
   const { onlineUsers } = usePresence({
     room: `workspace-${workspaceId}`,
@@ -89,3 +87,5 @@ const WorkspaceMembersList = () => {
 };
 
 export default WorkspaceMembersList;
+
+// fix this error

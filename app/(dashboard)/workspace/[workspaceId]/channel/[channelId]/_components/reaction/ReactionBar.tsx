@@ -78,27 +78,30 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
 
           const prevThread = queryClient.getQueryData(threadOptions.queryKey);
 
-          queryClient.setQueryData(threadOptions.queryKey, (old: any) => {
-            if (!old) return old;
+          queryClient.setQueryData<typeof prevThread>(
+            threadOptions.queryKey,
+            (old) => {
+              if (!old) return old;
 
-            const isParent = vars.messageId === context.threadId;
+              const isParent = vars.messageId === context.threadId;
 
-            return {
-              ...old,
-              parent: isParent
-                ? {
-                    ...old.parent,
-                    reactions: bump(old.parent?.reactions, emoji),
-                  }
-                : old.parent,
-              messages:
-                old.messages?.map((msg: MessageListItem) =>
-                  msg.id === vars.messageId
-                    ? { ...msg, reactions: bump(msg.reactions, emoji) }
-                    : msg
-                ) || [],
-            };
-          });
+              return {
+                ...old,
+                parent: isParent
+                  ? {
+                      ...old.parent,
+                      reactions: bump(old.parent?.reactions, emoji),
+                    }
+                  : old.parent,
+                messages:
+                  old.messages?.map((msg: MessageListItem) =>
+                    msg.id === vars.messageId
+                      ? { ...msg, reactions: bump(msg.reactions, emoji) }
+                      : msg
+                  ) || [],
+              };
+            }
+          );
 
           return {
             threadQueryKey: threadOptions.queryKey,

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Hash,
   UserPlus,
@@ -252,7 +252,11 @@ function StepThreeMockup() {
   }, []);
 
   const chatMessages = [
-    { sender: "Sarah", content: "Hey team! Ready for the standup?", isMe: false },
+    {
+      sender: "Sarah",
+      content: "Hey team! Ready for the standup?",
+      isMe: false,
+    },
     { sender: "You", content: "Yes! Just finishing up a PR", isMe: true },
     { sender: "Alex", content: "Give me 2 minutes 🏃", isMe: false },
   ];
@@ -277,10 +281,7 @@ function StepThreeMockup() {
               opacity: messages.includes(index) ? 1 : 0,
               y: messages.includes(index) ? 0 : 10,
             }}
-            className={cn(
-              "flex gap-3",
-              msg.isMe && "flex-row-reverse"
-            )}
+            className={cn("flex gap-3", msg.isMe && "flex-row-reverse")}
           >
             <div
               className={cn(
@@ -384,8 +385,14 @@ function StepFourMockup() {
             className="mt-2 space-y-2 border-l-2 border-primary/30 pl-4"
           >
             {[
-              { name: "Alex", content: "I think it's a good idea! The docs look solid." },
-              { name: "Jordan", content: "Agreed, let's discuss in tomorrow's standup" },
+              {
+                name: "Alex",
+                content: "I think it's a good idea! The docs look solid.",
+              },
+              {
+                name: "Jordan",
+                content: "Agreed, let's discuss in tomorrow's standup",
+              },
             ].map((reply, index) => (
               <motion.div
                 key={index}
@@ -399,7 +406,9 @@ function StepFourMockup() {
                 <div className="h-5 w-5 shrink-0 rounded-full bg-muted" />
                 <div>
                   <span className="text-xs font-medium">{reply.name}</span>
-                  <p className="text-sm text-muted-foreground">{reply.content}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {reply.content}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -410,100 +419,112 @@ function StepFourMockup() {
   );
 }
 
-function StepFiveMockup() {
-  const [reactions, setReactions] = useState<string[]>([]);
-  const [showPicker, setShowPicker] = useState(false);
+// function StepFiveMockup() {
+//   const [reactions, setReactions] = useState<string[]>([]);
+//   const [showPicker, setShowPicker] = useState(false);
 
-  useEffect(() => {
-    const timers = [
-      setTimeout(() => setReactions(["🎉"]), 600),
-      setTimeout(() => setReactions(["🎉", "🚀"]), 1200),
-      setTimeout(() => setShowPicker(true), 1800),
-      setTimeout(() => setReactions(["🎉", "🚀", "❤️"]), 2400),
-      setTimeout(() => setShowPicker(false), 2600),
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, []);
+//   // Ref to store reaction counts — generated once
+//   const reactionCountsRef = useRef<Record<string, number>>({});
 
-  const allEmoji = ["👍", "❤️", "😂", "😮", "🎉", "🚀"];
+//   const allEmoji = ["👍", "❤️", "😂", "😮", "🎉", "🚀"];
 
-  return (
-    <div className="flex h-full flex-col items-center justify-center p-4">
-      {/* Message */}
-      <div className="w-full max-w-sm rounded-lg border border-border bg-muted/30 p-4">
-        <div className="mb-2 flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-primary" />
-          <div>
-            <span className="text-sm font-medium">You</span>
-            <span className="ml-2 text-xs text-muted-foreground">Just now</span>
-          </div>
-        </div>
-        <p className="mb-3 text-sm">
-          Just shipped the new feature! 🚀 Thanks everyone for the help!
-        </p>
+//   // Generate counts only once, when a new emoji is added
+//   useEffect(() => {
+//     reactions.forEach((emoji) => {
+//       if (!(emoji in reactionCountsRef.current)) {
+//         reactionCountsRef.current[emoji] = Math.floor(Math.random() * 3) + 1;
+//       }
+//     });
+//   }, [reactions]);
 
-        {/* Reactions */}
-        <div className="flex flex-wrap gap-1.5">
-          <AnimatePresence>
-            {reactions.map((emoji) => (
-              <motion.span
-                key={emoji}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm ring-1 ring-primary/20"
-              >
-                {emoji}{" "}
-                <span className="text-xs text-muted-foreground">
-                  {Math.floor(Math.random() * 3) + 1}
-                </span>
-              </motion.span>
-            ))}
-          </AnimatePresence>
+//   useEffect(() => {
+//     const timers = [
+//       setTimeout(() => setReactions(["🎉"]), 600),
+//       setTimeout(() => setReactions(["🎉", "🚀"]), 1200),
+//       setTimeout(() => setShowPicker(true), 1800),
+//       setTimeout(() => setReactions(["🎉", "🚀", "❤️"]), 2400),
+//       setTimeout(() => setShowPicker(false), 2600),
+//     ];
+//     return () => timers.forEach(clearTimeout);
+//   }, []);
 
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground"
-          >
-            <Smile className="h-4 w-4" />
-          </motion.button>
-        </div>
-      </div>
+//   return (
+//     <div className="flex h-full flex-col items-center justify-center p-4">
+//       {/* Message */}
+//       <div className="w-full max-w-sm rounded-lg border border-border bg-muted/30 p-4">
+//         <div className="mb-2 flex items-center gap-2">
+//           <div className="h-8 w-8 rounded-full bg-primary" />
+//           <div>
+//             <span className="text-sm font-medium">You</span>
+//             <span className="ml-2 text-xs text-muted-foreground">Just now</span>
+//           </div>
+//         </div>
+//         <p className="mb-3 text-sm">
+//           Just shipped the new feature! 🚀 Thanks everyone for the help!
+//         </p>
 
-      {/* Emoji Picker */}
-      <AnimatePresence>
-        {showPicker && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="mt-4 flex gap-2 rounded-xl border border-border bg-card p-3 shadow-lg"
-          >
-            {allEmoji.map((emoji) => (
-              <motion.span
-                key={emoji}
-                whileHover={{ scale: 1.2 }}
-                className={cn(
-                  "cursor-pointer text-xl transition-transform",
-                  emoji === "❤️" && "scale-125"
-                )}
-              >
-                {emoji}
-              </motion.span>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+//         {/* Reactions */}
+//         <div className="flex flex-wrap gap-1.5">
+//           <AnimatePresence>
+//             {reactions.map((emoji) => (
+//               <motion.span
+//                 key={emoji}
+//                 initial={{ scale: 0 }}
+//                 animate={{ scale: 1 }}
+//                 exit={{ scale: 0 }}
+//                 className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm ring-1 ring-primary/20"
+//               >
+//                 {emoji}
+//                 <span className="text-xs text-muted-foreground">
+//                   {reactionCountsRef.current[emoji]}
+//                 </span>
+//               </motion.span>
+//             ))}
+//           </AnimatePresence>
+
+//           <motion.button
+//             whileHover={{ scale: 1.1 }}
+//             className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground"
+//           >
+//             <Smile className="h-4 w-4" />
+//           </motion.button>
+//         </div>
+//       </div>
+
+//       {/* Emoji Picker */}
+//       <AnimatePresence>
+//         {showPicker && (
+//           <motion.div
+//             initial={{ opacity: 0, y: 10, scale: 0.95 }}
+//             animate={{ opacity: 1, y: 0, scale: 1 }}
+//             exit={{ opacity: 0, y: 10, scale: 0.95 }}
+//             className="mt-4 flex gap-2 rounded-xl border border-border bg-card p-3 shadow-lg"
+//           >
+//             {allEmoji.map((emoji) => (
+//               <motion.span
+//                 key={emoji}
+//                 whileHover={{ scale: 1.2 }}
+//                 className={cn(
+//                   "cursor-pointer text-xl transition-transform",
+//                   emoji === "❤️" && "scale-125"
+//                 )}
+//               >
+//                 {emoji}
+//               </motion.span>
+//             ))}
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </div>
+//   );
+// }
 
 const mockups: Record<number, React.ReactNode> = {
   1: <StepOneMockup />,
   2: <StepTwoMockup />,
   3: <StepThreeMockup />,
   4: <StepFourMockup />,
-  5: <StepFiveMockup />,
+  // 5: <StepFiveMockup />,
 };
 
 export default function Features() {
@@ -573,9 +594,7 @@ export default function Features() {
                     whileHover={{ x: 4 }}
                     className={cn(
                       "group flex w-full items-center gap-4 rounded-xl p-4 text-left transition-all duration-200",
-                      isActive
-                        ? "bg-primary/10"
-                        : "hover:bg-muted/50"
+                      isActive ? "bg-primary/10" : "hover:bg-muted/50"
                     )}
                   >
                     {/* Step Number */}
@@ -602,7 +621,9 @@ export default function Features() {
                         <span
                           className={cn(
                             "font-medium transition-colors",
-                            isActive ? "text-foreground" : "text-muted-foreground"
+                            isActive
+                              ? "text-foreground"
+                              : "text-muted-foreground"
                           )}
                         >
                           {step.title}
@@ -654,11 +675,12 @@ export default function Features() {
                         step.id < activeStep
                           ? "100%"
                           : step.id === activeStep
-                            ? "100%"
-                            : "0%",
+                          ? "100%"
+                          : "0%",
                     }}
                     transition={{
-                      duration: step.id === activeStep && isAutoPlaying ? 4 : 0.3,
+                      duration:
+                        step.id === activeStep && isAutoPlaying ? 4 : 0.3,
                       ease: "linear",
                     }}
                   />

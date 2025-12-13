@@ -2,11 +2,9 @@
 
 import { motion } from "motion/react";
 import {
-  Download,
   Users,
   Hash,
   MessageSquare,
-  ArrowRight,
   Check,
   Sparkles,
 } from "lucide-react";

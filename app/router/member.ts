@@ -48,7 +48,7 @@ export const inviteMember = base
           ],
         },
       });
-    } catch (error) {
+    } catch {
       throw errors.INTERNAL_SERVER_ERROR();
     }
   });

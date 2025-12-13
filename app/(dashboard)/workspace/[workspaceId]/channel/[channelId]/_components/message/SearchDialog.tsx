@@ -1,4 +1,3 @@
-// components/search/SearchDialog.tsx
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -22,7 +21,6 @@ import {
   MessageSquare,
   ArrowRight,
   Clock,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -110,7 +108,6 @@ const SearchResultItem = ({
       )}
     >
       <div className="flex gap-2.5 sm:gap-3">
-        {/* Author Avatar */}
         <Image
           src={getAvatar(result.authorAvatar, result.authorEmail)}
           alt={result.authorName}
@@ -120,15 +117,12 @@ const SearchResultItem = ({
         />
 
         <div className="flex-1 min-w-0 space-y-1">
-          {/* Header Row */}
           <div className="flex items-start sm:items-center justify-between gap-2">
             <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 min-w-0">
-              {/* Author Name */}
               <span className="font-semibold text-sm truncate max-w-[150px] sm:max-w-none">
                 {result.authorName}
               </span>
 
-              {/* Channel Badge */}
               <span
                 className={cn(
                   "inline-flex items-center gap-1 text-xs",
@@ -145,14 +139,12 @@ const SearchResultItem = ({
               </span>
             </div>
 
-            {/* Time */}
             <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 flex items-center gap-1">
               <Clock className="size-3 hidden sm:inline" />
               {formatRelativeTime(result.createdAt)}
             </span>
           </div>
 
-          {/* Message Content Preview */}
           <div className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
             <SafeContent
               content={highlightedContent}
@@ -160,7 +152,6 @@ const SearchResultItem = ({
             />
           </div>
 
-          {/* Thread indicator */}
           {result.threadId && (
             <div className="inline-flex items-center gap-1.5 text-xs text-primary/80 bg-primary/5 px-2 py-1 rounded-full">
               <MessageSquare className="size-3" />
@@ -169,7 +160,6 @@ const SearchResultItem = ({
           )}
         </div>
 
-        {/* Navigate arrow */}
         <div
           className={cn(
             "flex items-center justify-center",
@@ -247,7 +237,6 @@ export function SearchDialog() {
   const debouncedQuery = useDebounce(searchQuery, SEARCH_DEBOUNCE_MS);
   const shouldSearch = debouncedQuery.length >= MIN_SEARCH_LENGTH;
 
-  // Search query configuration
   const searchOptions = useMemo(
     () =>
       orpc.message.search.infiniteOptions({
@@ -282,7 +271,6 @@ export function SearchDialog() {
     gcTime: 5 * 60_000,
   });
 
-  // Flatten results
   const results = useMemo(
     () => data?.pages.flatMap((p) => p.items) ?? [],
     [data]
@@ -290,21 +278,29 @@ export function SearchDialog() {
 
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 
-  // Reset selected index when results change
+  // Clamp selected index to valid bounds (safe to compute during render)
+  const clampedSelectedIndex = useMemo(() => {
+    if (results.length === 0) return 0;
+    return Math.min(selectedIndex, results.length - 1);
+  }, [selectedIndex, results.length]);
+
+  // Reset selected index when search parameters change (triggers new results)
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [results]);
+    queueMicrotask(() => {
+      setSelectedIndex(0);
+    });
+  }, [debouncedQuery, searchInChannel]);
 
   // Focus input when dialog opens
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
+      return () => clearTimeout(timeoutId);
     }
   }, [isOpen]);
 
-  // Handle scroll for infinite loading
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -316,7 +312,6 @@ export function SearchDialog() {
     }
   }, [hasNextPage, isFetching, fetchNextPage]);
 
-  // Navigate to message with highlight support
   const handleNavigate = useCallback(
     (messageId: string, channelId: string, threadId?: string | null) => {
       const isCurrentChannel = channelId === params.channelId;
@@ -370,7 +365,7 @@ export function SearchDialog() {
           break;
         case "Enter":
           e.preventDefault();
-          const selectedResult = results[selectedIndex];
+          const selectedResult = results[clampedSelectedIndex];
           if (selectedResult?.channelId) {
             handleNavigate(
               selectedResult.id,
@@ -384,17 +379,17 @@ export function SearchDialog() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeSearch, results, selectedIndex, handleNavigate]);
+  }, [isOpen, closeSearch, results, clampedSelectedIndex, handleNavigate]);
 
   // Scroll selected item into view
   useEffect(() => {
     if (results.length > 0 && scrollRef.current) {
       const selectedElement = scrollRef.current.querySelector(
-        `[data-index="${selectedIndex}"]`
+        `[data-index="${clampedSelectedIndex}"]`
       );
       selectedElement?.scrollIntoView({ block: "nearest" });
     }
-  }, [selectedIndex, results.length]);
+  }, [clampedSelectedIndex, results.length]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeSearch()}>
@@ -409,11 +404,9 @@ export function SearchDialog() {
           "rounded-2xl"
         )}
       >
-        {/* Header */}
         <DialogHeader className="p-3 sm:p-4 pb-0 space-y-3">
           <DialogTitle className="sr-only">Search Messages</DialogTitle>
 
-          {/* Search Input */}
           <div className="relative">
             <div
               className={cn(
@@ -464,7 +457,6 @@ export function SearchDialog() {
             )}
           </div>
 
-          {/* Search scope toggle */}
           {currentChannelId && (
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Button
@@ -502,10 +494,8 @@ export function SearchDialog() {
           )}
         </DialogHeader>
 
-        {/* Divider */}
         <div className="h-px bg-border mx-3 sm:mx-4 mt-3" />
 
-        {/* Results area */}
         <div className="flex-1 min-h-0 overflow-hidden">
           {!shouldSearch ? (
             <InitialSearchState />
@@ -515,7 +505,6 @@ export function SearchDialog() {
             <EmptySearchState query={debouncedQuery} />
           ) : (
             <div className="h-full flex flex-col">
-              {/* Results count */}
               <div className="px-3 sm:px-4 py-2 flex items-center justify-between">
                 <span className="text-xs sm:text-sm text-muted-foreground">
                   <span className="font-medium text-foreground">
@@ -531,7 +520,6 @@ export function SearchDialog() {
                 )}
               </div>
 
-              {/* Scrollable results */}
               <div
                 ref={scrollRef}
                 onScroll={handleScroll}
@@ -549,12 +537,11 @@ export function SearchDialog() {
                         result={result}
                         onNavigate={handleNavigate}
                         isCurrentChannel={result.channelId === params.channelId}
-                        isSelected={index === selectedIndex}
+                        isSelected={index === clampedSelectedIndex}
                       />
                     </div>
                   ))}
 
-                  {/* Load more indicator */}
                   {isFetchingNextPage && (
                     <div className="flex items-center justify-center py-4 gap-2">
                       <Loader2 className="size-4 animate-spin text-muted-foreground" />
@@ -564,7 +551,6 @@ export function SearchDialog() {
                     </div>
                   )}
 
-                  {/* End of results */}
                   {!hasNextPage && results.length > 0 && (
                     <div className="text-center py-4">
                       <span className="text-xs text-muted-foreground px-3 py-1.5 bg-muted/50 rounded-full">
@@ -578,7 +564,6 @@ export function SearchDialog() {
           )}
         </div>
 
-        {/* Footer with keyboard hints */}
         <div
           className={cn(
             "border-t px-3 sm:px-4 py-2 sm:py-2.5",

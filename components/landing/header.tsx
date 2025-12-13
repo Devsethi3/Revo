@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, MountainIcon, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
@@ -11,11 +11,8 @@ import {
   RegisterLink,
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
-import Image from "next/image";
-import ThemeSwitcher from "../ui/theme-switcher";
 import LogoIcon from "../general/LogoIcon";
 import { ThemeToggle } from "../ui/theme-toggle";
-import UserNav from "@/app/(dashboard)/workspace/_components/UserNav";
 import { RippleEffect } from "../ui/ripple-effect";
 
 const menuItems = [

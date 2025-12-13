@@ -1,4 +1,4 @@
-import arcjet, { detectBot, shield, slidingWindow } from "@/lib/arcjet";
+import arcjet, { slidingWindow } from "@/lib/arcjet";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { base } from "../base";
 import { ArcjetNextRequest } from "@arcjet/next";

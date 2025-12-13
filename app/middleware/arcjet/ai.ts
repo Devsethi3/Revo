@@ -6,6 +6,7 @@ import aj, {
 } from "@/lib/arcjet";
 import { base } from "../base";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
+import { ArcjetNextRequest } from "@arcjet/next";
 
 const buildAiAj = () =>
   aj
@@ -36,7 +37,7 @@ const buildAiAj = () =>
 
 export const aiSecurityMiddleware = base
   .$context<{
-    request: Request;
+    request: Request | ArcjetNextRequest;
     user: KindeUser<Record<string, unknown>>;
   }>()
   .middleware(async ({ context, next, errors }) => {

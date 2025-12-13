@@ -524,7 +524,7 @@ export const deleteMessage = base
     };
   });
 
-  // router/message.ts - Add this endpoint
+// router/message.ts - Add this endpoint
 
 export const searchMessages = base
   .use(requiredAuthMiddleware)
@@ -559,11 +559,11 @@ export const searchMessages = base
       totalCount: z.number(),
     })
   )
-  .handler(async ({ input, context, errors }) => {
+  .handler(async ({ input, context }) => {
     const limit = input.limit ?? 20;
     const searchQuery = input.query.trim();
 
-    // Build where clause
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const whereClause: any = {
       channel: {
         workspaceId: context.workspace.orgCode,

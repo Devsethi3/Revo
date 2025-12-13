@@ -20,6 +20,7 @@ const aj = arcjet({
 async function existingMiddleware(req: NextRequest) {
   const anyReq = req as {
     nextUrl: NextRequest["nextUrl"];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     kindeAuth?: { token?: any; user?: any };
   };
 
@@ -51,4 +52,5 @@ export const config = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$|rpc).*)",
   ],
+  runtime: "nodejs",
 };

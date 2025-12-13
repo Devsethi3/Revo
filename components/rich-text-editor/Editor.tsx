@@ -6,6 +6,7 @@ import Menubar from "./Menubar";
 import { ReactNode } from "react";
 
 interface RichTextEditorProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any;
   sendButton: ReactNode;
   footerLeft?: ReactNode;

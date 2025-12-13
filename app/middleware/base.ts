@@ -2,7 +2,7 @@ import { ArcjetNextRequest } from "@arcjet/next";
 import { os } from "@orpc/server";
 
 export const base = os
-  .$context<{ request: Request | w }>()
+  .$context<{ request: Request | ArcjetNextRequest }>()
   .errors({
     RATE_LIMITED: {
       message: "You are beign rate limited.",

@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ThreadSidebar from "./_components/thread/ThreadSidebar";
 import { ThreadProvider, useThread } from "@/providers/ThreadProvider";
 import { ChannelRealtimeProvider } from "@/providers/ChannelRealtimeProvider";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ChannelPage = () => {
   const { channelId } = useParams<{ channelId: string }>();

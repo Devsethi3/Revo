@@ -29,24 +29,17 @@ export const SidebarProvider = ({
   children,
   defaultOpen = true,
 }: SidebarProviderProps) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return defaultOpen;
 
-  // Hydrate state from localStorage on mount
-  useEffect(() => {
     const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
-    if (stored !== null) {
-      setIsOpen(stored === "true");
-    }
-    setIsHydrated(true);
-  }, []);
+    return stored !== null ? stored === "true" : defaultOpen;
+  });
 
-  // Persist state to localStorage
+  // Persist state to localStorage (this IS a valid effect)
   useEffect(() => {
-    if (isHydrated) {
-      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
-    }
-  }, [isOpen, isHydrated]);
+    localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
+  }, [isOpen]);
 
   const toggle = useCallback(() => {
     setIsOpen((prev) => !prev);

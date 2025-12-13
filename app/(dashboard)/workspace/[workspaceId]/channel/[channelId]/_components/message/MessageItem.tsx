@@ -5,11 +5,7 @@ import { MessageHoverToolbar } from "../toolbar";
 import { forwardRef, useCallback, useState, useMemo } from "react";
 import EditMessage from "../toolbar/EditMessage";
 import { MessageListItem } from "@/lib/types";
-import {
-  ArrowRightIcon,
-  ChevronRightIcon,
-  MessageSquareIcon,
-} from "lucide-react";
+import { ArrowRightIcon, MessageSquareIcon } from "lucide-react";
 import { useThread } from "@/providers/ThreadProvider";
 import { orpc } from "@/lib/orpc";
 import { useQueryClient } from "@tanstack/react-query";

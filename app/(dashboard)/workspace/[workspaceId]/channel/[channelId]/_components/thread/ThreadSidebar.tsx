@@ -14,7 +14,6 @@ import ThreadSidebarSkeleton from "./ThreadbarSidebarSkeleton";
 import { useEffect, useRef, useState } from "react";
 import SummarizeThread from "./SummarizeThread";
 import { ThreadRealtimeProvider } from "@/providers/ThreadRealtimeProvider";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ThreadSidebarProps {
   user: KindeUser<Record<string, unknown>>;
@@ -65,8 +64,6 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
             block: "end",
           });
         });
-
-        setIsAtBottom(true);
       }
     }
 
@@ -137,11 +134,21 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
       <div className="w-full h-full flex flex-col bg-background">
         {/* Header */}
         <div className="border-b h-12 sm:h-14 px-2 sm:px-4 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <MessageSquare className="size-4 shrink-0" />
-            <span className="font-medium text-sm sm:text-base truncate">
-              Thread
-            </span>
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex items-center justify-center size-8 sm:size-9 rounded-lg bg-primary/10 text-primary">
+              <MessageSquare className="size-4 sm:size-[18px]" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm sm:text-base tracking-tight">
+                Thread
+              </span>
+              {data && (
+                <span className="text-[10px] sm:text-xs text-muted-foreground">
+                  {data.messages.length}{" "}
+                  {data.messages.length === 1 ? "reply" : "replies"}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
