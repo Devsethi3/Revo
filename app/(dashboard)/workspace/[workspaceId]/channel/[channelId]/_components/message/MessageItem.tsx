@@ -5,7 +5,11 @@ import { MessageHoverToolbar } from "../toolbar";
 import { forwardRef, useCallback, useState, useMemo } from "react";
 import EditMessage from "../toolbar/EditMessage";
 import { MessageListItem } from "@/lib/types";
-import { MessageSquareIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  ChevronRightIcon,
+  MessageSquareIcon,
+} from "lucide-react";
 import { useThread } from "@/providers/ThreadProvider";
 import { orpc } from "@/lib/orpc";
 import { useQueryClient } from "@tanstack/react-query";
@@ -181,20 +185,21 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
                 <button
                   onClick={handleThreadClick}
                   type="button"
-                  className="mt-1 cursor-pointer inline-flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded px-1 py-0.5 -ml-1 transition-colors"
+                  className="group/thread mt-2 inline-flex items-center gap-1.5 border-l-2 border-primary/60 pl-2.5 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   onMouseEnter={prefetchThread}
                   onFocus={prefetchThread}
                   aria-label={`View ${replyCount} ${
                     replyCount === 1 ? "reply" : "replies"
                   }`}
                 >
-                  <MessageSquareIcon className="size-3 sm:size-3.5" />
+                  <MessageSquareIcon className="size-3.5 text-primary/70" />
                   <span>
-                    {replyCount} {replyCount === 1 ? "reply" : "replies"}
+                    <span className="font-semibold text-foreground">
+                      {replyCount}
+                    </span>{" "}
+                    {replyCount === 1 ? "reply" : "replies"}
                   </span>
-                  <span className="hidden sm:inline opacity-0 group-hover:opacity-100 transition-opacity">
-                    View Thread
-                  </span>
+                  <ArrowRightIcon className="size-3 opacity-0 transition-all group-hover/thread:translate-x-0.5 group-hover/ thread:opacity-100" />
                 </button>
               )}
             </>
