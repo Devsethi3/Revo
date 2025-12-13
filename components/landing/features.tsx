@@ -418,113 +418,121 @@ function StepFourMockup() {
     </div>
   );
 }
+function StepFiveMockup() {
+  const [reactions, setReactions] = useState<string[]>([]);
+  const [showPicker, setShowPicker] = useState(false);
 
-// function StepFiveMockup() {
-//   const [reactions, setReactions] = useState<string[]>([]);
-//   const [showPicker, setShowPicker] = useState(false);
+  // Deterministic reaction counts (pure)
+  const [reactionCounts, setReactionCounts] = useState<Record<string, number>>(
+    {}
+  );
 
-//   // Ref to store reaction counts — generated once
-//   const reactionCountsRef = useRef<Record<string, number>>({});
+  const allEmoji = ["👍", "❤️", "😂", "😮", "🎉", "🚀"];
 
-//   const allEmoji = ["👍", "❤️", "😂", "😮", "🎉", "🚀"];
+  // Timeline-driven reactions (pure & predictable)
+  useEffect(() => {
+    const steps = [
+      { time: 600, emoji: "🎉" },
+      { time: 1200, emoji: "🚀" },
+      { time: 2400, emoji: "❤️" },
+    ];
 
-//   // Generate counts only once, when a new emoji is added
-//   useEffect(() => {
-//     reactions.forEach((emoji) => {
-//       if (!(emoji in reactionCountsRef.current)) {
-//         reactionCountsRef.current[emoji] = Math.floor(Math.random() * 3) + 1;
-//       }
-//     });
-//   }, [reactions]);
+    const timers = steps.map(({ time, emoji }) =>
+      setTimeout(() => {
+        setReactions((prev) => [...prev, emoji]);
+        setReactionCounts((prev) => ({
+          ...prev,
+          [emoji]: (prev[emoji] ?? 0) + 1,
+        }));
+      }, time)
+    );
 
-//   useEffect(() => {
-//     const timers = [
-//       setTimeout(() => setReactions(["🎉"]), 600),
-//       setTimeout(() => setReactions(["🎉", "🚀"]), 1200),
-//       setTimeout(() => setShowPicker(true), 1800),
-//       setTimeout(() => setReactions(["🎉", "🚀", "❤️"]), 2400),
-//       setTimeout(() => setShowPicker(false), 2600),
-//     ];
-//     return () => timers.forEach(clearTimeout);
-//   }, []);
+    timers.push(
+      setTimeout(() => setShowPicker(true), 1800),
+      setTimeout(() => setShowPicker(false), 2600)
+    );
 
-//   return (
-//     <div className="flex h-full flex-col items-center justify-center p-4">
-//       {/* Message */}
-//       <div className="w-full max-w-sm rounded-lg border border-border bg-muted/30 p-4">
-//         <div className="mb-2 flex items-center gap-2">
-//           <div className="h-8 w-8 rounded-full bg-primary" />
-//           <div>
-//             <span className="text-sm font-medium">You</span>
-//             <span className="ml-2 text-xs text-muted-foreground">Just now</span>
-//           </div>
-//         </div>
-//         <p className="mb-3 text-sm">
-//           Just shipped the new feature! 🚀 Thanks everyone for the help!
-//         </p>
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
-//         {/* Reactions */}
-//         <div className="flex flex-wrap gap-1.5">
-//           <AnimatePresence>
-//             {reactions.map((emoji) => (
-//               <motion.span
-//                 key={emoji}
-//                 initial={{ scale: 0 }}
-//                 animate={{ scale: 1 }}
-//                 exit={{ scale: 0 }}
-//                 className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm ring-1 ring-primary/20"
-//               >
-//                 {emoji}
-//                 <span className="text-xs text-muted-foreground">
-//                   {reactionCountsRef.current[emoji]}
-//                 </span>
-//               </motion.span>
-//             ))}
-//           </AnimatePresence>
+  return (
+    <div className="flex h-full flex-col items-center justify-center p-4">
+      {/* Message */}
+      <div className="w-full max-w-sm rounded-lg border border-border bg-muted/30 p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-primary" />
+          <div>
+            <span className="text-sm font-medium">You</span>
+            <span className="ml-2 text-xs text-muted-foreground">Just now</span>
+          </div>
+        </div>
 
-//           <motion.button
-//             whileHover={{ scale: 1.1 }}
-//             className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground"
-//           >
-//             <Smile className="h-4 w-4" />
-//           </motion.button>
-//         </div>
-//       </div>
+        <p className="mb-3 text-sm">
+          Just shipped the new feature! 🚀 Thanks everyone for the help!
+        </p>
 
-//       {/* Emoji Picker */}
-//       <AnimatePresence>
-//         {showPicker && (
-//           <motion.div
-//             initial={{ opacity: 0, y: 10, scale: 0.95 }}
-//             animate={{ opacity: 1, y: 0, scale: 1 }}
-//             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-//             className="mt-4 flex gap-2 rounded-xl border border-border bg-card p-3 shadow-lg"
-//           >
-//             {allEmoji.map((emoji) => (
-//               <motion.span
-//                 key={emoji}
-//                 whileHover={{ scale: 1.2 }}
-//                 className={cn(
-//                   "cursor-pointer text-xl transition-transform",
-//                   emoji === "❤️" && "scale-125"
-//                 )}
-//               >
-//                 {emoji}
-//               </motion.span>
-//             ))}
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-//     </div>
-//   );
-// }
+        {/* Reactions */}
+        <div className="flex flex-wrap gap-1.5">
+          <AnimatePresence>
+            {reactions.map((emoji) => (
+              <motion.span
+                key={emoji}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm ring-1 ring-primary/20"
+              >
+                {emoji}
+                <span className="text-xs text-muted-foreground">
+                  {reactionCounts[emoji]}
+                </span>
+              </motion.span>
+            ))}
+          </AnimatePresence>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground"
+          >
+            <Smile className="h-4 w-4" />
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Emoji Picker */}
+      <AnimatePresence>
+        {showPicker && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="mt-4 flex gap-2 rounded-xl border border-border bg-card p-3 shadow-lg"
+          >
+            {allEmoji.map((emoji) => (
+              <motion.span
+                key={emoji}
+                whileHover={{ scale: 1.2 }}
+                className={cn(
+                  "cursor-pointer text-xl transition-transform",
+                  emoji === "❤️" && "scale-125"
+                )}
+              >
+                {emoji}
+              </motion.span>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 const mockups: Record<number, React.ReactNode> = {
   1: <StepOneMockup />,
   2: <StepTwoMockup />,
   3: <StepThreeMockup />,
   4: <StepFourMockup />,
-  // 5: <StepFiveMockup />,
+  5: <StepFiveMockup />,
 };
 
 export default function Features() {
@@ -543,7 +551,7 @@ export default function Features() {
   }, [isAutoPlaying]);
 
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-24 md:py-32" id="features">
       <div className="mx-auto max-w-6xl px-6">
         {/* Header */}
         <div className="mb-16 text-center">

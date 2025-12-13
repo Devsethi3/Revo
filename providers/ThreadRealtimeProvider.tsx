@@ -34,7 +34,7 @@ export function ThreadRealtimeProvider({
   type ThreadQueryData = Awaited<ReturnType<ThreadListOptions["queryFn"]>>;
 
   const socket = usePartySocket({
-    host: "http://127.0.0.1:8787",
+    host: "https://revo.try-devsethi.workers.dev",
     room: `thread-${threadId}`,
     party: "chat",
     onMessage(e) {

@@ -16,10 +16,10 @@ import { ThemeToggle } from "../ui/theme-toggle";
 import { RippleEffect } from "../ui/ripple-effect";
 
 const menuItems = [
-  { name: "Features", href: "#link" },
-  { name: "Solution", href: "#link" },
-  { name: "Pricing", href: "#link" },
-  { name: "About", href: "#link" },
+  { name: "Features", href: "#features" },
+  { name: "About", href: "#about" },
+  { name: "CTA", href: "#cta" },
+  { name: "How it works", href: "#how-it-works" },
 ];
 
 export const HeroHeader = () => {

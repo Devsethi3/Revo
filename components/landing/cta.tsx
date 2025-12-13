@@ -9,7 +9,7 @@ import { RippleEffect } from "../ui/ripple-effect";
 
 export default function CTASection() {
   return (
-    <section className="relative py-24 lg:py-32">
+    <section className="relative py-24 lg:py-32" id="cta">
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

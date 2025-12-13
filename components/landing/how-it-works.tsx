@@ -189,7 +189,7 @@ const StepVisual = ({ type }: { type: string }) => {
 
 export default function HowItWorksSection() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-24 md:py-32" id="how-it-works">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_60%_60%_at_50%_50%,#000_40%,transparent_100%)] opacity-40" />

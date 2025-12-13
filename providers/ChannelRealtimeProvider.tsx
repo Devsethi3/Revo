@@ -29,7 +29,7 @@ export function ChannelRealtimeProvider({
   const queryClient = useQueryClient();
 
   const socket = usePartySocket({
-    host: "http://127.0.0.1:8787",
+    host: "https://revo.try-devsethi.workers.dev",
     room: `channel-${channelId}`,
     party: "chat",
     onMessage(e) {

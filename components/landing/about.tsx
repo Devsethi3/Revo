@@ -285,7 +285,7 @@ const PresencePreview = () => (
 
 export default function AboutSection() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-24 md:py-32" id="about">
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Header */}
         <div className="mb-12 text-center">
@@ -295,7 +295,7 @@ export default function AboutSection() {
             viewport={{ once: true }}
             className="mb-3 text-sm font-medium uppercase tracking-wider text-primary"
           >
-            Features
+            About
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 12 }}
