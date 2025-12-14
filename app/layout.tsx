@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     siteName: "Revo",
     images: [
       {
-        url: "/og-image.png",
+        url: "/revo-showcase.png",
         width: 1200,
         height: 630,
         alt: "Revo — Real-time collaboration for teams",
