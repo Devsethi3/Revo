@@ -1,6 +1,6 @@
-# Production-Grade README for Revo
+# Revo — Open-Source Real-Time Collaboration Platform
 
-```markdown
+---
 <div align="center">
 
 ![Revo Banner](./public/revo-showcase.png)
@@ -59,51 +59,42 @@ A modern real-time collaboration platform for teams. Chat instantly, share files
 <table>
   <tr>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/hash.svg" width="48" height="48" alt="Channels">
       <br><strong>Channel Management</strong>
       <br><sub>Create organized spaces for teams, projects, or topics</sub>
     </td>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/user-plus.svg" width="48" height="48" alt="Team">
       <br><strong>Team Collaboration</strong>
       <br><sub>Invite teammates and collaborate in real-time</sub>
     </td>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/message-square.svg" width="48" height="48" alt="Messages">
       <br><strong>Instant Messaging</strong>
       <br><sub>Send messages, share ideas, and stay connected</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/messages-square.svg" width="48" height="48" alt="Threads">
       <br><strong>Threaded Discussions</strong>
       <br><sub>Keep detailed conversations organized with threads</sub>
     </td>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/smile.svg" width="48" height="48" alt="Reactions">
       <br><strong>Reactions & Engagement</strong>
       <br><sub>React with emojis to quickly respond and engage</sub>
     </td>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sparkles.svg" width="48" height="48" alt="AI">
       <br><strong>AI Assistant</strong>
       <br><sub>Get help with writing, summarizing, and more</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/upload.svg" width="48" height="48" alt="Files">
       <br><strong>File Sharing</strong>
       <br><sub>Upload and share files seamlessly with UploadThing</sub>
     </td>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/file-text.svg" width="48" height="48" alt="Editor">
       <br><strong>Rich Text Editor</strong>
       <br><sub>Format messages with TipTap's powerful editor</sub>
     </td>
     <td align="center" width="33%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/moon.svg" width="48" height="48" alt="Theme">
       <br><strong>Dark/Light Mode</strong>
       <br><sub>Beautiful themes that adapt to your preference</sub>
     </td>
@@ -173,9 +164,9 @@ A modern real-time collaboration platform for teams. Chat instantly, share files
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                                   CLIENT                                     │
+│                                   CLIENT                                    │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                         Next.js 16 App Router                        │    │
+│  │                         Next.js 16 App Router                       │    │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐  │    │
 │  │  │   React 19  │  │  TanStack   │  │   shadcn/ui │  │   Motion   │  │    │
 │  │  │ Components  │  │    Query    │  │  + Radix UI │  │ Animations │  │    │
@@ -193,36 +184,36 @@ A modern real-time collaboration platform for teams. Chat instantly, share files
 ┌─────────────────┼───────────────────┼───────────────────┼─────────────────┐
 │                 │                   │                   │      EDGE       │
 │                 ▼                   ▼                   ▼                 │
-│  ┌──────────────────────────────────────────────────────────────────┐    │
-│  │                        Cloudflare Workers                         │    │
-│  │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │    │
-│  │  │   PartyServer   │  │     Wrangler    │  │   Edge Runtime   │  │    │
-│  │  │   (WebSocket)   │  │   (Deployment)  │  │   (Low Latency)  │  │    │
-│  │  └─────────────────┘  └─────────────────┘  └──────────────────┘  │    │
-│  └──────────────────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────────────┘
+│  ┌──────────────────────────────────────────────────────────────────┐     │
+│  │                        Cloudflare Workers                        │     │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │     │
+│  │  │   PartyServer   │  │     Wrangler    │  │   Edge Runtime   │  │     │ 
+│  │  │   (WebSocket)   │  │   (Deployment)  │  │   (Low Latency)  │  │     │
+│  │  └─────────────────┘  └─────────────────┘  └──────────────────┘  │     │
+│  └──────────────────────────────────────────────────────────────────┘     │
+└──────────────────────────────────────────────────────────────────────────-┘
                                       │
 ┌─────────────────────────────────────┼────────────────────────────────────┐
-│                                     │              SERVER                 │
+│                                     │              SERVER                │
 │  ┌──────────────────────────────────┼───────────────────────────────┐    │
-│  │                         Next.js API Layer                         │    │
+│  │                         Next.js API Layer                        │    │
 │  │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │    │
 │  │  │   oRPC Server   │  │     Arcjet      │  │   Kinde Auth     │  │    │
 │  │  │  (Procedures)   │  │   (Security)    │  │ (Authentication) │  │    │
 │  │  └────────┬────────┘  └─────────────────┘  └──────────────────┘  │    │
 │  └───────────┼──────────────────────────────────────────────────────┘    │
-│              │                                                            │
-│              ▼                                                            │
+│              │                                                           │
+│              ▼                                                           │
 │  ┌──────────────────────────────────────────────────────────────────┐    │
-│  │                         Prisma ORM                                │    │
+│  │                         Prisma ORM                               │    │
 │  │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │    │
 │  │  │     Models      │  │    Migrations   │  │  Query Builder   │  │    │
 │  │  └────────┬────────┘  └─────────────────┘  └──────────────────┘  │    │
 │  └───────────┼──────────────────────────────────────────────────────┘    │
-│              │                                                            │
-│              ▼                                                            │
+│              │                                                           │
+│              ▼                                                           │
 │  ┌──────────────────────────────────────────────────────────────────┐    │
-│  │                      Neon PostgreSQL                              │    │
+│  │                      Neon PostgreSQL                             │    │
 │  │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │    │
 │  │  │   Serverless    │  │    Branching    │  │   Auto-scaling   │  │    │
 │  │  └─────────────────┘  └─────────────────┘  └──────────────────┘  │    │
@@ -599,17 +590,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
-
-This README includes:
-- ✅ Hero section with showcase image
-- ✅ Features extracted from your component
-- ✅ Complete tech stack with badges
-- ✅ Visual architecture diagram (ASCII art)
-- ✅ Getting started guide
-- ✅ Project structure
-- ✅ Environment variables
-- ✅ Database setup
-- ✅ Deployment instructions
-- ✅ Contributing guidelines
-- ✅ License and author info
+---
