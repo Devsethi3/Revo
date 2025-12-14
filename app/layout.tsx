@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: "Revo — Connect. Collaborate. Create.",
     description:
       "A modern real-time collaboration app for teams. Chat, share files, and collaborate seamlessly.",
-    images: ["/og-image.png"],
+    images: ["/revo-showcase.png"],
     creator: "@imsethidev",
   },
 
