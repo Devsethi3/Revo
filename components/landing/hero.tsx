@@ -1,14 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRightIcon,
-  Github,
-  PlayCircle,
-  Star,
-  StarIcon,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRightIcon, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
@@ -151,7 +144,7 @@ export default function HeroSection() {
                   className="flex items-center gap-2"
                   target="_blank"
                 >
-                  ⭐ Star on GitHub
+                  <Star className="fill-primary" /> GitHub
                 </Link>
               </Button>
             </AnimatedGroup>
