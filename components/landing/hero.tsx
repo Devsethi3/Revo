@@ -144,7 +144,7 @@ export default function HeroSection() {
                   className="flex items-center gap-2 font-medium"
                   target="_blank"
                 >
-                  ⭐ Star on GitHub
+                  ⭐ GitHub
                 </Link>
               </Button>
             </AnimatedGroup>
