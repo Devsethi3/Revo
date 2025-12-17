@@ -138,11 +138,13 @@ export default function HeroSection() {
                   Start for free <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-
               <Button asChild size="lg" variant="outline">
-                <Link href="#demo" className="flex items-center gap-2">
-                  <PlayCircle className="h-4 w-4 text-muted-foreground" />
-                  Watch Demo
+                <Link
+                  href="https://github.com/Devsethi3/Revo"
+                  className="flex items-center gap-2 font-medium"
+                  target="_blank"
+                >
+                  ⭐ Star on GitHub
                 </Link>
               </Button>
             </AnimatedGroup>

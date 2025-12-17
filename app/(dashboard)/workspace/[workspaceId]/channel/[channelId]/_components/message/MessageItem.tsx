@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import ReactionBar from "../reaction/ReactionBar";
 import { useDeleteMessage } from "@/hooks/use-delete-message";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface MessageItemProps {
   message: MessageListItem;
@@ -122,13 +123,19 @@ const MessageItem = forwardRef<HTMLDivElement, MessageItemProps>(
         data-message-id={message.id}
       >
         {/* Avatar */}
-        <Image
-          src={getAvatar(message.authorAvatar, message.authorEmail)}
-          alt="User Avatar"
-          width={32}
-          height={32}
-          className="size-7 sm:size-8 rounded-lg shrink-0"
-        />
+
+        <Avatar className="relative size-8 rounded-lg">
+          <Image
+            src={getAvatar(message.authorAvatar, message.authorEmail)}
+            alt="User Avatar"
+            className="size-7 sm:size-8 rounded-lg shrink-0"
+            unoptimized
+            fill
+          />
+          <AvatarFallback className="bg-linear-to-br from-emerald-700 via-emerald-800 to-indigo-700 font-semibold text-white">
+            {message.authorName?.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
 
         {/* Message Content */}
         <div className="flex-1 space-y-0.5 sm:space-y-1 min-w-0">

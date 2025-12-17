@@ -82,7 +82,7 @@ const ChannelHeader = ({ channelName }: ChannelHeaderProps) => {
 
         {/* Channel Name */}
         <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 flex-1">
-          <Hash className="size-4 sm:size-5 text-muted-foreground shrink-0" />
+          <Hash className="size-4 sm:size-5 shrink-0" />
           <h1 className="text-base md:text-lg font-semibold truncate">
             {channelName}
           </h1>

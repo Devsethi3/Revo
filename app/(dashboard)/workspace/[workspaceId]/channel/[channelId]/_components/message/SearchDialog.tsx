@@ -28,6 +28,7 @@ import { getAvatar } from "@/lib/get-avatar";
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { useRouter, useParams } from "next/navigation";
 import { useThread } from "@/providers/ThreadProvider";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_LIMIT = 20;
@@ -108,13 +109,18 @@ const SearchResultItem = ({
       )}
     >
       <div className="flex gap-2.5 sm:gap-3">
-        <Image
-          src={getAvatar(result.authorAvatar, result.authorEmail)}
-          alt={result.authorName}
-          width={40}
-          height={40}
-          className="size-8 sm:size-10 rounded-full shrink-0 ring-2 ring-background"
-        />
+        <Avatar className="size-8">
+          <Image
+            src={getAvatar(result.authorAvatar, result.authorEmail)}
+            alt={result.authorName}
+            fill
+            unoptimized
+            className="size-8 sm:size-10 shrink-0 ring-2 ring-background"
+          />
+          <AvatarFallback className="bg-linear-to-br from-emerald-700 via-emerald-800 to-indigo-700 font-semibold text-white size-8 sm:size-10 rounded-md">
+            {result.authorName?.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
 
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex items-start sm:items-center justify-between gap-2">

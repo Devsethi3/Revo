@@ -7,7 +7,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { client } from "@/lib/orpc";
-import { Cloud } from "lucide-react";
+import { MessagesSquare } from "lucide-react";
 import { redirect } from "next/navigation";
 import CreateNewChannel from "./_components/CreateNewChannel";
 
@@ -30,7 +30,7 @@ const WorkspacePageId = async ({ params }: WorkspacePageIdProps) => {
       <Empty className="border border-dashed from-muted/50 to-background w-full h-full bg-linear-to-b from-30% flex items-center justify-center">
         <EmptyHeader>
           <EmptyMedia variant="icon" className="bg-primary/10">
-            <Cloud className="size-5 text-primary" />
+            <MessagesSquare className="size-5 text-primary" />
           </EmptyMedia>
           <EmptyTitle> No Channels yet!</EmptyTitle>
           <EmptyDescription>

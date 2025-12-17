@@ -23,7 +23,7 @@ const MemberItem = ({ member, isOnline }: MemberItemProps) => {
                 fill
                 unoptimized
               />
-              <AvatarFallback>
+              <AvatarFallback className="bg-linear-to-br from-emerald-700 via-emerald-800 to-indigo-700 font-semibold text-white">
                 {member.full_name?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

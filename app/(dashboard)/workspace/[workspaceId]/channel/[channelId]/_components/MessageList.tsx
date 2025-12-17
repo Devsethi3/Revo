@@ -439,7 +439,7 @@ const MessageList = () => {
           bottomRef.current?.scrollIntoView({ block: "end" });
         });
       }
-    };
+  };
 
     const onImageLoad = (e: Event) => {
       if (e.target instanceof HTMLImageElement) {

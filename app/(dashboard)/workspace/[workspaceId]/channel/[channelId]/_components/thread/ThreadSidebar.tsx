@@ -14,6 +14,7 @@ import ThreadSidebarSkeleton from "./ThreadbarSidebarSkeleton";
 import { useEffect, useRef, useState } from "react";
 import SummarizeThread from "./SummarizeThread";
 import { ThreadRealtimeProvider } from "@/providers/ThreadRealtimeProvider";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface ThreadSidebarProps {
   user: KindeUser<Record<string, unknown>>;
@@ -192,13 +193,18 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
                 {/* Parent Message */}
                 <div className="p-3 sm:p-4 border-b bg-muted/20">
                   <div className="flex gap-2 sm:gap-3">
-                    <Image
-                      src={data.parent.authorAvatar}
-                      alt={`${data.parent.authorName}'s avatar`}
-                      width={32}
-                      height={32}
-                      className="size-7 sm:size-8 rounded-lg shrink-0"
-                    />
+                    <Avatar className="relative size-8 rounded-lg">
+                      <Image
+                        src={data.parent.authorAvatar}
+                        alt={`${data.parent.authorName}'s avatar`}
+                        className="size-7 sm:size-8 rounded-lg shrink-0"
+                        unoptimized
+                        fill
+                      />
+                      <AvatarFallback className="bg-linear-to-br from-emerald-700 via-emerald-800 to-indigo-700 font-semibold text-white">
+                        {data.parent.authorName?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex-1 space-y-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                         <span className="font-medium text-xs sm:text-sm">

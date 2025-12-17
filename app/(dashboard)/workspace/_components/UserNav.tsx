@@ -40,8 +40,9 @@ const UserNav = () => {
                 alt="User Image"
                 className="object-cover"
                 fill
+                unoptimized
               />
-              <AvatarFallback>
+              <AvatarFallback className="bg-linear-to-br from-emerald-700 via-emerald-800 to-indigo-700 font-semibold text-white">
                 {user.given_name?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -55,18 +56,24 @@ const UserNav = () => {
         >
           <DropdownMenuLabel className="font-normal flex items-center gap-2 px-1 text-left text-sm">
             <Avatar className="relative size-8 rounded-lg">
-              <AvatarImage
+              <Image
                 src={getAvatar(user.picture, user.email!)}
                 alt="User Image"
                 className="object-cover"
-              />{" "}
-              <AvatarFallback>
+                fill
+                unoptimized
+              />
+              <AvatarFallback className="bg-linear-to-br from-emerald-700 via-emerald-800 to-indigo-700 font-semibold text-white">
                 {user.given_name?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <p className="truncate">Dev Sethi</p>
-              <p>devsethi@gmail.com</p>
+              <p className="truncate text-sm font-medium">
+                {user.given_name || "User"}
+              </p>
+              <p className="truncate text-sm text-muted-foreground">
+                {user.email}
+              </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

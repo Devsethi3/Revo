@@ -1,4 +1,4 @@
-import { Cloud, PlusCircle } from "lucide-react";
+import {  Hash, PlusCircle } from "lucide-react";
 import {
   Empty,
   EmptyContent,
@@ -25,10 +25,10 @@ const EmptyState = ({
 }: EmptyStateProps) => {
   return (
     <>
-      <Empty className="border border-dashed">
+      <Empty>
         <EmptyHeader>
           <EmptyMedia variant="icon" className="bg-primary/10">
-            <Cloud className="size-5 text-primary" />
+            <Hash className="size-5 text-primary" />
           </EmptyMedia>
           <EmptyTitle>{title}</EmptyTitle>
           <EmptyDescription>{description}</EmptyDescription>
