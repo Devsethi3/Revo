@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ArrowUpRightIcon, PlayCircle } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRightIcon,
+  Github,
+  PlayCircle,
+  Star,
+  StarIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
@@ -141,10 +148,10 @@ export default function HeroSection() {
               <Button asChild size="lg" variant="outline">
                 <Link
                   href="https://github.com/Devsethi3/Revo"
-                  className="flex items-center gap-2 font-medium"
+                  className="flex items-center gap-2"
                   target="_blank"
                 >
-                  ⭐ GitHub
+                  ⭐ Star on GitHub
                 </Link>
               </Button>
             </AnimatedGroup>
