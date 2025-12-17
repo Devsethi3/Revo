@@ -1,4 +1,4 @@
-# Revo — Open-Source Real-Time Collaboration Platform
+# Revo is an open-source real-time collaboration platform.
 
 ---
 <div align="center">
@@ -528,43 +528,6 @@ Made with ❤️ and ☕
 
 </div>
 
-
----
-
-## 📁 Additional Files to Create
-
-### `.env.example`
-
-```env
-# Database
-DATABASE_URL=
-
-# Kinde Auth
-KINDE_CLIENT_ID=
-KINDE_CLIENT_SECRET=
-KINDE_ISSUER_URL=
-KINDE_SITE_URL=
-KINDE_POST_LOGOUT_REDIRECT_URL=
-KINDE_POST_LOGIN_REDIRECT_URL=
-KINDE_DOMAIN=
-KINDE_MANAGEMENT_CLIENT_ID=
-KINDE_MANAGEMENT_CLIENT_SECRET=
-
-# UploadThing
-UPLOADTHING_TOKEN=
-
-# OpenRouter AI
-OPENROUTER_LLM_KEY=
-
-# Arcjet Security
-ARCJET_KEY=
-
-# PartyKit Real-time
-NEXT_PUBLIC_PARTYKIT_HOST=
-
-# App URL
-NEXT_PUBLIC_APP_URL=
-```
 
 ### `LICENSE` (MIT)
 
