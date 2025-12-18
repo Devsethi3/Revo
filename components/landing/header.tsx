@@ -133,11 +133,6 @@ export const HeroHeader = () => {
                           variant: "default",
                           className: cn(isScrolled && "lg:hidden"),
                         })}
-                        authUrlParams={{
-                          is_create_org: "true",
-                          org_name: "My Workspace",
-                          pricing_table_key: "organization_plans",
-                        }}
                       >
                         Register
                       </RegisterLink>
