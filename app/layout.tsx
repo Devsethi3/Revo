@@ -11,7 +11,7 @@ const font = Grandstander();
 
 export const metadata: Metadata = {
   title: {
-    default: "Revo — Connect. Collaborate. Create.",
+    default: "Revo | Connect. Collaborate. Create.",
     template: "%s | Revo",
   },
 
