@@ -13,8 +13,8 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_LLM_KEY,
 });
 
-const MODEL_ID = "amazon/nova-2-lite-v1:free";
-
+// const MODEL_ID = "amazon/nova-2-lite-v1:free";
+const MODEL_ID =  "nvidia/nemotron-nano-9b-v2:free"
 const model = openrouter.chat(MODEL_ID);
 
 export const generateThreadSummary = base

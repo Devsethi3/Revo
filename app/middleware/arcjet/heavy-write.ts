@@ -30,11 +30,11 @@ export const heavyWriteSecurityMiddleware = base
     });
 
     if (decision.isDenied()) {
-      if (decision.reason.isRateLimit()) {
-        throw errors.RATE_LIMITED({
-          message: "Too many impactual changes. Please slow down",
-        });
-      }
+      // if (decision.reason.isRateLimit()) {
+      //   throw errors.RATE_LIMITED({
+      //     message: "Too many impactual changes. Please slow down",
+      //   });
+      // }
 
       if (decision.reason.isRateLimit()) {
         throw errors.BAD_REQUEST({
