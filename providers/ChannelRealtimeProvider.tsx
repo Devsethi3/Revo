@@ -22,6 +22,21 @@ type InfiniteMessages = InfiniteData<MessageListPage>;
 const ChannelRealtimeContext =
   createContext<ChannelRealtimeContextValue | null>(null);
 
+const mergeReactions = (
+  prev: RealtimeMessageType["reactions"] | undefined,
+  next: RealtimeMessageType["reactions"]
+) => {
+  const prevMap = new Map<string, boolean>();
+  (prev ?? []).forEach((r) => {
+    prevMap.set(r.emoji, r.reactedByMe);
+  });
+
+  return next.map((r) => ({
+    ...r,
+    reactedByMe: prevMap.get(r.emoji) ?? false,
+  }));
+};
+
 export function ChannelRealtimeProvider({
   children,
   channelId,
@@ -179,7 +194,12 @@ export function ChannelRealtimeProvider({
               const pages = old.pages.map((p) => ({
                 ...p,
                 items: p.items.map((m) =>
-                  m.id === messageId ? { ...m, reactions } : m
+                  m.id === messageId
+                    ? {
+                        ...m,
+                        reactions: mergeReactions(m.reactions, reactions),
+                      }
+                    : m
                 ),
               }));
 

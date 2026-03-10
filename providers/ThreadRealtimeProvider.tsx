@@ -21,6 +21,21 @@ const ThreadRealtimeContext = createContext<ThreadRealtimeContextValue | null>(
   null
 );
 
+const mergeReactions = (
+  prev: RealtimeMessageType["reactions"] | undefined,
+  next: RealtimeMessageType["reactions"]
+) => {
+  const prevMap = new Map<string, boolean>();
+  (prev ?? []).forEach((r) => {
+    prevMap.set(r.emoji, r.reactedByMe);
+  });
+
+  return next.map((r) => ({
+    ...r,
+    reactedByMe: prevMap.get(r.emoji) ?? false,
+  }));
+};
+
 export function ThreadRealtimeProvider({
   children,
   threadId,
@@ -96,13 +111,21 @@ export function ThreadRealtimeProvider({
             if (messageId === threadId) {
               return {
                 ...old,
-                parent: { ...old.parent, reactions },
+                parent: {
+                  ...old.parent,
+                  reactions: mergeReactions(old.parent.reactions, reactions),
+                },
               };
             }
             return {
               ...old,
               messages: old.messages.map((m) =>
-                m.id === messageId ? { ...m, reactions } : m
+                m.id === messageId
+                  ? {
+                      ...m,
+                      reactions: mergeReactions(m.reactions, reactions),
+                    }
+                  : m
               ),
             };
           });
