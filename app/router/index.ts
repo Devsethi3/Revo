@@ -12,12 +12,13 @@ import {
   toggleMessageReaction,
   updateMessage,
 } from "./message";
-import { createWorkspace, listWorkspace } from "./workspace";
+import { createWorkspace, listWorkspace, debugSession } from "./workspace";
 
 export const router = {
   workspace: {
     list: listWorkspace,
     create: createWorkspace,
+    debug: debugSession,
     member: {
       list: listMembers,
       invite: inviteMember,

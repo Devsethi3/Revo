@@ -48,15 +48,23 @@ const ReactionBar = ({ messageId, reactions, context }: ReactionBarProps) => {
     const found = rxns.find((r) => r.emoji === emoji);
 
     if (found) {
-      const newCount = found.count - 1;
+      if (found.reactedByMe) {
+        const newCount = found.count - 1;
 
-      return newCount <= 0
-        ? rxns.filter((r) => r.emoji !== emoji)
-        : rxns.map((r) =>
-            r.emoji === emoji
-              ? { ...r, count: newCount, reactedByMe: false }
-              : r
-          );
+        return newCount <= 0
+          ? rxns.filter((r) => r.emoji !== emoji)
+          : rxns.map((r) =>
+              r.emoji === emoji
+                ? { ...r, count: newCount, reactedByMe: false }
+                : r
+            );
+      }
+
+      return rxns.map((r) =>
+        r.emoji === emoji
+          ? { ...r, count: r.count + 1, reactedByMe: true }
+          : r
+      );
     }
 
     return [...rxns, { emoji, count: 1, reactedByMe: true }];

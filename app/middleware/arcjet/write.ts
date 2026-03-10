@@ -32,7 +32,7 @@ export const writeSecurityMiddleware = base
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
         throw errors.RATE_LIMITED({
-          message: "Too many impactual changes. Please slow down",
+          message: "Too many impactful changes. Please slow down",
         });
       }
 
