@@ -23,14 +23,14 @@ const ThreadRealtimeContext = createContext<ThreadRealtimeContextValue | null>(
 
 const mergeReactions = (
   prev: RealtimeMessageType["reactions"] | undefined,
-  next: RealtimeMessageType["reactions"]
+  next: RealtimeMessageType["reactions"] | undefined
 ) => {
   const prevMap = new Map<string, boolean>();
   (prev ?? []).forEach((r) => {
     prevMap.set(r.emoji, r.reactedByMe);
   });
 
-  return next.map((r) => ({
+  return (next ?? []).map((r) => ({
     ...r,
     reactedByMe: prevMap.get(r.emoji) ?? false,
   }));
