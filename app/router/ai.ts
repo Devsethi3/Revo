@@ -1,3 +1,4 @@
+
 import { base } from "../middleware/base";
 import { requiredAuthMiddleware } from "../middleware/auth";
 import { requiredWorkspaceMiddleware } from "../middleware/workspace";
@@ -13,7 +14,7 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_LLM_KEY,
 });
 
-const MODEL_ID = "amazon/nova-2-lite-v1:free";
+const MODEL_ID = "nvidia/nemotron-3-super-120b-a12b:free";
 
 const model = openrouter.chat(MODEL_ID);
 
@@ -30,7 +31,7 @@ export const generateThreadSummary = base
   .input(
     z.object({
       messageId: z.string(),
-    })
+    }),
   )
   .handler(async ({ input, context, errors }) => {
     const baseMessage = await prisma.message.findFirst({
@@ -89,7 +90,7 @@ export const generateThreadSummary = base
     const lines = [];
 
     lines.push(
-      `Thread Root - ${parent.authorName} - ${parent.createdAt.toISOString()}`
+      `Thread Root - ${parent.authorName} - ${parent.createdAt.toISOString()}`,
     );
 
     lines.push(parentText);
@@ -138,7 +139,7 @@ export const generateCompose = base
   .input(
     z.object({
       content: z.string(),
-    })
+    }),
   )
   .handler(async ({ input }) => {
     const markdown = await JSONToMarkdown(input.content);

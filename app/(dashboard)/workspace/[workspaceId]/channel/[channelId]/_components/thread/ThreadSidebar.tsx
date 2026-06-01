@@ -35,7 +35,7 @@ const ThreadSidebar = ({ user }: ThreadSidebarProps) => {
         messageId: selectedThreadId!,
       },
       enabled: Boolean(selectedThreadId),
-    })
+    }),
   );
 
   const messageCount = data?.messages.length ?? 0;
